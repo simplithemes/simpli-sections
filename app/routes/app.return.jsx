@@ -1,5 +1,4 @@
 import { authenticate } from "../shopify.server";
-import { hasActiveOneTimePurchaseForSection } from "../shopify.server";
 import { SECTION_CATALOG } from "../data/sections";
 
 const META_NAMESPACE = "simpli_sections";
@@ -127,26 +126,10 @@ export async function loader({ request }) {
     });
   }
 
-  const isActive = await hasActiveOneTimePurchaseForSection({
-    admin,
-    sectionHandle,
-  });
-
   const redirectParams = new URLSearchParams();
   redirectParams.set("section", sectionHandle);
   if (host) redirectParams.set("host", host);
   if (shop) redirectParams.set("shop", shop);
-
-  if (!isActive) {
-    redirectParams.set("status", "pending");
-
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: `/app/billing?${redirectParams.toString()}`,
-      },
-    });
-  }
 
   const { shopId, current } = await getUnlockedSections({ admin });
 
