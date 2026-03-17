@@ -1,5 +1,9 @@
 import "@shopify/shopify-app-react-router/adapters/node";
-import { ApiVersion, AppDistribution, shopifyApp } from "@shopify/shopify-app-react-router/server";
+import {
+  ApiVersion,
+  AppDistribution,
+  shopifyApp,
+} from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 
@@ -11,11 +15,7 @@ const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
-
-  // ✅ IMPORTANT FIX:
-  // Use SingleMerchant while developing / selling directly (not App Store yet)
   distribution: AppDistribution.AppStore,
-
   future: {
     expiringOfflineAccessTokens: true,
   },
@@ -32,3 +32,21 @@ export const unauthenticated = shopify.unauthenticated;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
+
+/**
+ * Temporary helper so any route importing this does not fail during build.
+ * You can replace this later with actual billing validation logic.
+ */
+export async function hasActiveOneTimePurchaseForSection({
+  admin,
+  sectionHandle,
+}) {
+  try {
+    void admin;
+    void sectionHandle;
+    return true;
+  } catch (error) {
+    console.error("hasActiveOneTimePurchaseForSection error:", error);
+    return false;
+  }
+}

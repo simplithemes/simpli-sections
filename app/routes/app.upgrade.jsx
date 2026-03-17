@@ -27,7 +27,16 @@ export async function loader({ request }) {
 
   const { admin } = await authenticate.admin(request);
 
-  const returnUrl = new URL(`${process.env.SHOPIFY_APP_URL}/app/billing`);
+  const appUrl = process.env.SHOPIFY_APP_URL;
+  if (!appUrl) {
+    return {
+      ok: false,
+      confirmationUrl: "",
+      errors: [{ message: "SHOPIFY_APP_URL is not configured." }],
+    };
+  }
+
+  const returnUrl = new URL(`${appUrl}/app/billing`);
   returnUrl.searchParams.set("plan", "unlimited");
   returnUrl.searchParams.set("host", host);
   returnUrl.searchParams.set("shop", shop);
