@@ -1,0 +1,498 @@
+{% assign unlocked = shop.metafields.simpli_sections.unlocked_sections.value | default: '' %}
+{% assign handle = 'trust_badges' %}
+{% assign is_unlocked = false %}
+
+{% if unlocked contains handle or unlocked contains '__all_access__' %}
+  {% assign is_unlocked = true %}
+{% endif %}
+
+{% style %}
+  .simpli-trust-wrap-{{ block.id }} {
+    width: 100%;
+    margin: 0;
+  }
+
+  .simpli-trust-box-{{ block.id }} {
+    background: {{ block.settings.bg_color }};
+    border: 1px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.roundness }}px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  }
+
+  .simpli-trust-grid-{{ block.id }} {
+    display: grid;
+    grid-template-columns: repeat({{ block.settings.columns_desktop }}, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .simpli-trust-item-{{ block.id }} {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: {{ block.settings.item_roundness }}px;
+    background: {{ block.settings.item_bg }};
+  }
+
+  .simpli-trust-icon-{{ block.id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    border-radius: 999px;
+    background: {{ block.settings.icon_bg }};
+    color: {{ block.settings.icon_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .simpli-trust-icon-{{ block.id }} svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+
+  .simpli-trust-content-{{ block.id }} {
+    min-width: 0;
+  }
+
+  .simpli-trust-title-{{ block.id }} {
+    margin: 0 0 4px 0;
+    font-size: {{ block.settings.title_size }}px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: {{ block.settings.title_color }};
+    letter-spacing: -0.01em;
+  }
+
+  .simpli-trust-text-{{ block.id }} {
+    margin: 0;
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.6;
+    color: {{ block.settings.text_color }};
+    opacity: 0.92;
+  }
+
+  .simpli-trust-locked-{{ block.id }} {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    border-radius: {{ block.settings.roundness }}px;
+    padding: 16px 18px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  }
+
+  .simpli-trust-locked-title-{{ block.id }} {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #7c2d12;
+  }
+
+  .simpli-trust-locked-text-{{ block.id }} {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #9a3412;
+  }
+
+  @media screen and (max-width: 989px) {
+    .simpli-trust-grid-{{ block.id }} {
+      grid-template-columns: repeat({{ block.settings.columns_tablet }}, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .simpli-trust-box-{{ block.id }} {
+      padding: 16px;
+      border-radius: {{ block.settings.roundness_mobile }}px;
+    }
+
+    .simpli-trust-grid-{{ block.id }} {
+      grid-template-columns: repeat({{ block.settings.columns_mobile }}, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .simpli-trust-item-{{ block.id }} {
+      padding: 10px;
+      border-radius: {{ block.settings.item_roundness_mobile }}px;
+    }
+
+    .simpli-trust-icon-{{ block.id }} {
+      width: {{ block.settings.icon_size_mobile }}px;
+      height: {{ block.settings.icon_size_mobile }}px;
+    }
+
+    .simpli-trust-title-{{ block.id }} {
+      font-size: {{ block.settings.title_size_mobile }}px;
+    }
+
+    .simpli-trust-text-{{ block.id }} {
+      font-size: {{ block.settings.text_size_mobile }}px;
+    }
+
+    .simpli-trust-locked-{{ block.id }} {
+      border-radius: {{ block.settings.roundness_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+{% assign titles = "Secure Checkout|Fast Shipping|Easy Returns|Quality Assured" | split: "|" %}
+{% assign texts = "100% safe payments and encrypted checkout.|Quick dispatch and reliable delivery experience.|Hassle-free return support for eligible orders.|Carefully selected products and trusted quality." | split: "|" %}
+{% assign icon_types = "lock|truck|refresh|shield" | split: "|" %}
+
+<div class="simpli-trust-wrap-{{ block.id }}" {{ block.shopify_attributes }}>
+  {% if is_unlocked %}
+    <div class="simpli-trust-box-{{ block.id }}">
+      <div class="simpli-trust-grid-{{ block.id }}">
+        {% for i in (1..4) %}
+          {% assign title_key = 'title_' | append: i %}
+          {% assign text_key = 'text_' | append: i %}
+          {% assign icon_key = 'icon_' | append: i %}
+
+          {% assign title_value = block.settings[title_key] %}
+          {% assign text_value = block.settings[text_key] %}
+          {% assign icon_value = block.settings[icon_key] %}
+
+          <div class="simpli-trust-item-{{ block.id }}">
+            <div class="simpli-trust-icon-{{ block.id }}">
+              {% case icon_value %}
+                {% when 'lock' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+                    <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
+                  </svg>
+                {% when 'truck' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 7h11v8H3z"></path>
+                    <path d="M14 10h3l3 3v2h-6z"></path>
+                    <circle cx="7.5" cy="17.5" r="1.5"></circle>
+                    <circle cx="17.5" cy="17.5" r="1.5"></circle>
+                  </svg>
+                {% when 'refresh' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 12a9 9 0 0 1 15.3-6.3L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 0 1-15.3 6.3L3 16"></path>
+                    <path d="M8 16H3v5"></path>
+                  </svg>
+                {% when 'shield' %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"></path>
+                  </svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 8v4"></path>
+                    <path d="M12 16h.01"></path>
+                  </svg>
+              {% endcase %}
+            </div>
+
+            <div class="simpli-trust-content-{{ block.id }}">
+              <p class="simpli-trust-title-{{ block.id }}">
+                {{ title_value | default: titles[forloop.index0] }}
+              </p>
+              <p class="simpli-trust-text-{{ block.id }}">
+                {{ text_value | default: texts[forloop.index0] }}
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="simpli-trust-locked-{{ block.id }}" role="status">
+      <p class="simpli-trust-locked-title-{{ block.id }}">Trust Badges is locked</p>
+      <p class="simpli-trust-locked-text-{{ block.id }}">
+        Unlock this premium section from the Simpli Sections app under Purchases to use it in your theme.
+      </p>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "target": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Desktop columns",
+      "default": "4",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Tablet columns",
+      "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Mobile columns",
+      "default": "1",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+
+    {
+      "type": "text",
+      "id": "title_1",
+      "label": "Badge 1 title",
+      "default": "Secure Checkout"
+    },
+    {
+      "type": "text",
+      "id": "text_1",
+      "label": "Badge 1 text",
+      "default": "100% safe payments and encrypted checkout."
+    },
+    {
+      "type": "select",
+      "id": "icon_1",
+      "label": "Badge 1 icon",
+      "default": "lock",
+      "options": [
+        { "value": "lock", "label": "Lock" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "refresh", "label": "Refresh" },
+        { "value": "shield", "label": "Shield" }
+      ]
+    },
+
+    {
+      "type": "text",
+      "id": "title_2",
+      "label": "Badge 2 title",
+      "default": "Fast Shipping"
+    },
+    {
+      "type": "text",
+      "id": "text_2",
+      "label": "Badge 2 text",
+      "default": "Quick dispatch and reliable delivery experience."
+    },
+    {
+      "type": "select",
+      "id": "icon_2",
+      "label": "Badge 2 icon",
+      "default": "truck",
+      "options": [
+        { "value": "lock", "label": "Lock" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "refresh", "label": "Refresh" },
+        { "value": "shield", "label": "Shield" }
+      ]
+    },
+
+    {
+      "type": "text",
+      "id": "title_3",
+      "label": "Badge 3 title",
+      "default": "Easy Returns"
+    },
+    {
+      "type": "text",
+      "id": "text_3",
+      "label": "Badge 3 text",
+      "default": "Hassle-free return support for eligible orders."
+    },
+    {
+      "type": "select",
+      "id": "icon_3",
+      "label": "Badge 3 icon",
+      "default": "refresh",
+      "options": [
+        { "value": "lock", "label": "Lock" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "refresh", "label": "Refresh" },
+        { "value": "shield", "label": "Shield" }
+      ]
+    },
+
+    {
+      "type": "text",
+      "id": "title_4",
+      "label": "Badge 4 title",
+      "default": "Quality Assured"
+    },
+    {
+      "type": "text",
+      "id": "text_4",
+      "label": "Badge 4 text",
+      "default": "Carefully selected products and trusted quality."
+    },
+    {
+      "type": "select",
+      "id": "icon_4",
+      "label": "Badge 4 icon",
+      "default": "shield",
+      "options": [
+        { "value": "lock", "label": "Lock" },
+        { "value": "truck", "label": "Truck" },
+        { "value": "refresh", "label": "Refresh" },
+        { "value": "shield", "label": "Shield" }
+      ]
+    },
+
+    {
+      "type": "range",
+      "id": "roundness",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Box roundness",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "roundness_mobile",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Box roundness mobile",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "item_roundness",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Item roundness",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "item_roundness_mobile",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Item roundness mobile",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 28,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 38
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "min": 24,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon size mobile",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size mobile",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size mobile",
+      "default": 12
+    },
+
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Box background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Box border",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "item_bg",
+      "label": "Item background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon background",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#111827"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#667085"
+    }
+  ]
+}
+{% endschema %}
