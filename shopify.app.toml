@@ -1,10 +1,10 @@
-# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
-
 client_id = "1834e252e45d75072a226db1f3ce1f20"
 name = "Simpli Sections"
-application_url = "https://thanks-karaoke-mating-wallpaper.trycloudflare.com"
-embedded = true
 handle = "simpli-sections"
+
+application_url = "https://simpli-sections-production.up.railway.app"
+
+embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
@@ -12,27 +12,16 @@ automatically_update_urls_on_dev = true
 [webhooks]
 api_version = "2026-04"
 
-  [[webhooks.subscriptions]]
-  topics = [ "app/scopes_update" ]
-  uri = "/webhooks/app/scopes_update"
-
-  [[webhooks.subscriptions]]
-  uri = "/webhooks"
-  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
-
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
-optional_scopes = [ ]
-use_legacy_install_flow = false
+[[webhooks.subscriptions]]
+topics = ["app/scopes_update"]
+uri = "/webhooks/app/scopes_update"
 
 [auth]
 redirect_urls = [
-  "https://thanks-karaoke-mating-wallpaper.trycloudflare.com/auth/callback",
-  "https://thanks-karaoke-mating-wallpaper.trycloudflare.com/app/return",
-  "https://thanks-karaoke-mating-wallpaper.trycloudflare.com/app/billing"
+  "https://simpli-sections-production.up.railway.app/auth/callback",
+  "https://simpli-sections-production.up.railway.app/auth/shopify/callback",
+  "https://simpli-sections-production.up.railway.app/api/auth/callback"
 ]
+
+[pos]
+embedded = false

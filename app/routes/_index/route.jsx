@@ -18,34 +18,64 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            padding: "8px 12px",
+            borderRadius: "999px",
+            background: "rgba(17,24,39,0.06)",
+            color: "#111827",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            marginBottom: "16px",
+          }}
+        >
+          Simpli Sections
+        </div>
+
+        <h1 className={styles.heading}>
+          Premium Shopify sections built for conversions
+        </h1>
+
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          Add conversion-focused Shopify sections like offer bars and trust
+          badges without editing theme code. Install the app and unlock premium
+          sections directly inside your Shopify admin.
         </p>
+
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">
             <label className={styles.label}>
-              <span>Shop domain</span>
-              <input className={styles.input} type="text" name="shop" />
-              <span>e.g: my-shop-domain.myshopify.com</span>
+              <span>Enter your Shopify store domain</span>
+              <input
+                className={styles.input}
+                type="text"
+                name="shop"
+                placeholder="your-store.myshopify.com"
+              />
+              <span>Example: your-store.myshopify.com</span>
             </label>
             <button className={styles.button} type="submit">
-              Log in
+              Continue
             </button>
           </Form>
         )}
+
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Premium sections.</strong> Launch ready-made Shopify app
+            blocks designed to improve store presentation and conversions.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Fast setup.</strong> Purchase a section, add it from the
+            theme customizer, and start using it without custom development.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Flexible access.</strong> Buy individual sections or unlock
+            the full library with the unlimited plan.
           </li>
         </ul>
       </div>
