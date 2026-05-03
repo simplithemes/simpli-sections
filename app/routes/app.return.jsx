@@ -38,6 +38,40 @@ async function getUnlockedSections({ admin }) {
   };
 }
 
+async function verifyOneTimePurchase({ admin, section }) {
+  if (Number(section.price) === 0 || section.type === "free") {
+    return true;
+  }
+
+  const expectedName = `Simpli Sections — ${section.title}`;
+
+  const query = `#graphql
+    query {
+      currentAppInstallation {
+        oneTimePurchases(first: 100) {
+          edges {
+            node {
+              id
+              name
+              status
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const resp = await admin.graphql(query);
+  const json = await resp.json();
+
+  const purchases =
+    json?.data?.currentAppInstallation?.oneTimePurchases?.edges || [];
+
+  return purchases.some(({ node }) => {
+    return node?.name === expectedName && node?.status === "ACTIVE";
+  });
+}
+
 async function setUnlockedSections({ admin, shopId, list }) {
   const mutation = `#graphql
     mutation MetafieldsSet($metafields: [MetafieldsSetInput!]!) {
@@ -75,6 +109,7 @@ async function setUnlockedSections({ admin, shopId, list }) {
   const json = await resp.json();
 
   const errors = json?.data?.metafieldsSet?.userErrors || [];
+
   if (errors.length) {
     const message = errors.map((e) => e.message).join(" | ");
     throw new Error(`metafieldsSet failed: ${message}`);
@@ -106,6 +141,7 @@ export async function loader({ request }) {
     admin = auth.admin;
   } catch (error) {
     const qs = new URLSearchParams();
+
     qs.set(
       "returnTo",
       `/app/return?section=${encodeURIComponent(sectionHandle)}${
@@ -126,8 +162,29 @@ export async function loader({ request }) {
     });
   }
 
+  const isPurchaseValid = await verifyOneTimePurchase({ admin, section });
+
+  if (!isPurchaseValid) {
+    const redirectParams = new URLSearchParams();
+
+    redirectParams.set("section", sectionHandle);
+    redirectParams.set("status", "payment_pending");
+
+    if (host) redirectParams.set("host", host);
+    if (shop) redirectParams.set("shop", shop);
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: `/app/billing?${redirectParams.toString()}`,
+      },
+    });
+  }
+
   const redirectParams = new URLSearchParams();
+
   redirectParams.set("section", sectionHandle);
+
   if (host) redirectParams.set("host", host);
   if (shop) redirectParams.set("shop", shop);
 

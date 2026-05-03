@@ -1,0 +1,151 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-rvp ss-rvp-{{ uid }}">
+  <div class="ss-rvp__inner">
+    <div class="ss-rvp__header">
+      <span>{{ block.settings.badge }}</span>
+      <h2>{{ block.settings.heading }}</h2>
+      <p>{{ block.settings.subheading }}</p>
+    </div>
+
+    <div class="ss-rvp__grid">
+      {% for product in block.settings.products %}
+        <a href="{{ product.url }}" class="ss-rvp__card">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | image_url: width: 420 }}" alt="{{ product.title | escape }}" loading="lazy">
+          {% endif %}
+          <div>
+            <strong>{{ product.title }}</strong>
+            <p>{{ product.price | money }}</p>
+          </div>
+        </a>
+      {% endfor %}
+
+      {% if block.settings.products == blank %}
+        <div class="ss-rvp__empty">Select products from theme editor.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ss-rvp-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__header span {
+    display: inline-block;
+    background: {{ block.settings.badge_bg }};
+    color: {{ block.settings.accent }};
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .ss-rvp-{{ uid }} h2 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: clamp(30px, 4vw, 48px);
+    letter-spacing: -0.05em;
+    line-height: 1.05;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__header p {
+    color: {{ block.settings.text_color }};
+    margin: 12px 0 0;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__card {
+    background: {{ block.settings.card_bg }};
+    border-radius: {{ block.settings.radius }}px;
+    overflow: hidden;
+    text-decoration: none;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 16px 42px rgba(15,23,42,0.07);
+    transition: transform 0.2s ease;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__card:hover {
+    transform: translateY(-3px);
+  }
+
+  .ss-rvp-{{ uid }} img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__card div {
+    padding: 14px;
+  }
+
+  .ss-rvp-{{ uid }} strong {
+    color: {{ block.settings.heading_color }};
+    display: block;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .ss-rvp-{{ uid }} p {
+    color: {{ block.settings.text_color }};
+    margin: 8px 0 0;
+    font-weight: 800;
+  }
+
+  .ss-rvp-{{ uid }} .ss-rvp__empty {
+    grid-column: 1 / -1;
+    color: {{ block.settings.text_color }};
+    text-align: center;
+    background: {{ block.settings.card_bg }};
+    border-radius: 20px;
+    padding: 28px;
+  }
+
+  @media(max-width: 749px) {
+    .ss-rvp-{{ uid }} .ss-rvp__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Recently Viewed Products",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Badge", "default": "Keep browsing" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Recently viewed products" },
+    { "type": "text", "id": "subheading", "label": "Subheading", "default": "Show selected products in a clean product grid style." },
+    { "type": "product_list", "id": "products", "label": "Products", "limit": 8 },
+    { "type": "color", "id": "background", "label": "Background", "default": "#F8FAFC" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#101828" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#667085" },
+    { "type": "color", "id": "accent", "label": "Accent", "default": "#3A084E" },
+    { "type": "color", "id": "badge_bg", "label": "Badge background", "default": "#F3E8FF" },
+    { "type": "range", "id": "radius", "label": "Card radius", "min": 10, "max": 36, "step": 1, "default": 22 },
+    { "type": "range", "id": "padding", "label": "Vertical padding", "min": 24, "max": 120, "step": 4, "default": 64 }
+  ]
+}
+{% endschema %}

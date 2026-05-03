@@ -1,0 +1,151 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-feature-grid ss-feature-grid-{{ uid }}">
+  <div class="ss-feature-grid__inner">
+    <div class="ss-feature-grid__header">
+      <span>{{ block.settings.badge }}</span>
+      <h2>{{ block.settings.heading }}</h2>
+      <p>{{ block.settings.subheading }}</p>
+    </div>
+
+    <div class="ss-feature-grid__grid">
+      {% for i in (1..6) %}
+        {% assign icon = 'icon_' | append: i %}
+        {% assign title = 'title_' | append: i %}
+        {% assign text = 'text_' | append: i %}
+
+        <div class="ss-feature-grid__card">
+          <div class="ss-feature-grid__icon">{{ block.settings[icon] }}</div>
+          <h3>{{ block.settings[title] }}</h3>
+          <p>{{ block.settings[text] }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ss-feature-grid-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 34px;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__header span {
+    display: inline-block;
+    background: {{ block.settings.badge_bg }};
+    color: {{ block.settings.accent }};
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .ss-feature-grid-{{ uid }} h2 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__header p {
+    color: {{ block.settings.text_color }};
+    margin: 14px 0 0;
+    line-height: 1.7;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__card {
+    background: {{ block.settings.card_bg }};
+    border-radius: {{ block.settings.radius }}px;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 14px 36px rgba(15,23,42,0.06);
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__icon {
+    font-size: 30px;
+    margin-bottom: 12px;
+  }
+
+  .ss-feature-grid-{{ uid }} h3 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: 18px;
+  }
+
+  .ss-feature-grid-{{ uid }} .ss-feature-grid__card p {
+    color: {{ block.settings.text_color }};
+    line-height: 1.6;
+    margin: 8px 0 0;
+    font-size: 14px;
+  }
+
+  @media(max-width: 749px) {
+    .ss-feature-grid-{{ uid }} .ss-feature-grid__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Simple Feature Grid",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Badge", "default": "Key benefits" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Everything customers need to know" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Showcase product or brand benefits in a clean responsive grid." },
+
+    { "type": "text", "id": "icon_1", "label": "Icon 1", "default": "✨" },
+    { "type": "text", "id": "title_1", "label": "Title 1", "default": "Premium Design" },
+    { "type": "text", "id": "text_1", "label": "Text 1", "default": "A clean section made for modern storefronts." },
+
+    { "type": "text", "id": "icon_2", "label": "Icon 2", "default": "⚡" },
+    { "type": "text", "id": "title_2", "label": "Title 2", "default": "Fast Setup" },
+    { "type": "text", "id": "text_2", "label": "Text 2", "default": "Add and customize directly from theme editor." },
+
+    { "type": "text", "id": "icon_3", "label": "Icon 3", "default": "📱" },
+    { "type": "text", "id": "title_3", "label": "Title 3", "default": "Mobile Friendly" },
+    { "type": "text", "id": "text_3", "label": "Text 3", "default": "Looks clean on desktop and mobile." },
+
+    { "type": "text", "id": "icon_4", "label": "Icon 4", "default": "🛒" },
+    { "type": "text", "id": "title_4", "label": "Title 4", "default": "Conversion Focused" },
+    { "type": "text", "id": "text_4", "label": "Text 4", "default": "Built to help customers understand value faster." },
+
+    { "type": "text", "id": "icon_5", "label": "Icon 5", "default": "🎯" },
+    { "type": "text", "id": "title_5", "label": "Title 5", "default": "Flexible Layout" },
+    { "type": "text", "id": "text_5", "label": "Text 5", "default": "Use it for products, services, policies or brand proof." },
+
+    { "type": "text", "id": "icon_6", "label": "Icon 6", "default": "✅" },
+    { "type": "text", "id": "title_6", "label": "Title 6", "default": "No Code Needed" },
+    { "type": "text", "id": "text_6", "label": "Text 6", "default": "Merchants can edit everything from settings." },
+
+    { "type": "color", "id": "background", "label": "Background", "default": "#F8FAFC" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#101828" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#667085" },
+    { "type": "color", "id": "accent", "label": "Accent", "default": "#3A084E" },
+    { "type": "color", "id": "badge_bg", "label": "Badge background", "default": "#F3E8FF" },
+    { "type": "range", "id": "radius", "label": "Card radius", "min": 8, "max": 32, "step": 1, "default": 22 },
+    { "type": "range", "id": "padding", "label": "Vertical padding", "min": 24, "max": 120, "step": 4, "default": 64 }
+  ]
+}
+{% endschema %}

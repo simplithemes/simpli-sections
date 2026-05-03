@@ -1,0 +1,110 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-logo-strip ss-logo-strip-{{ uid }}">
+  <div class="ss-logo-strip__inner">
+    {% if block.settings.heading != blank %}
+      <p>{{ block.settings.heading }}</p>
+    {% endif %}
+
+    <div class="ss-logo-strip__logos">
+      {% for i in (1..6) %}
+        {% assign logo = 'logo_' | append: i %}
+        {% assign text = 'text_' | append: i %}
+
+        <div class="ss-logo-strip__logo">
+          {% if block.settings[logo] != blank %}
+            <img src="{{ block.settings[logo] | image_url: width: 220 }}" alt="{{ block.settings[text] | escape }}" loading="lazy">
+          {% else %}
+            <span>{{ block.settings[text] }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ss-logo-strip-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-logo-strip-{{ uid }} .ss-logo-strip__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ss-logo-strip-{{ uid }} p {
+    margin: 0 0 22px;
+    color: {{ block.settings.text_color }};
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+
+  .ss-logo-strip-{{ uid }} .ss-logo-strip__logos {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+  }
+
+  .ss-logo-strip-{{ uid }} .ss-logo-strip__logo {
+    background: {{ block.settings.card_bg }};
+    border-radius: {{ block.settings.radius }}px;
+    min-height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .ss-logo-strip-{{ uid }} img {
+    max-width: 120px;
+    max-height: 42px;
+    object-fit: contain;
+  }
+
+  .ss-logo-strip-{{ uid }} span {
+    color: {{ block.settings.heading_color }};
+    font-weight: 900;
+  }
+
+  @media(max-width: 749px) {
+    .ss-logo-strip-{{ uid }} .ss-logo-strip__logos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Logo Strip",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Trusted by modern brands" },
+
+    { "type": "image_picker", "id": "logo_1", "label": "Logo 1" },
+    { "type": "text", "id": "text_1", "label": "Fallback text 1", "default": "Brand 1" },
+    { "type": "image_picker", "id": "logo_2", "label": "Logo 2" },
+    { "type": "text", "id": "text_2", "label": "Fallback text 2", "default": "Brand 2" },
+    { "type": "image_picker", "id": "logo_3", "label": "Logo 3" },
+    { "type": "text", "id": "text_3", "label": "Fallback text 3", "default": "Brand 3" },
+    { "type": "image_picker", "id": "logo_4", "label": "Logo 4" },
+    { "type": "text", "id": "text_4", "label": "Fallback text 4", "default": "Brand 4" },
+    { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
+    { "type": "text", "id": "text_5", "label": "Fallback text 5", "default": "Brand 5" },
+    { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
+    { "type": "text", "id": "text_6", "label": "Fallback text 6", "default": "Brand 6" },
+
+    { "type": "color", "id": "background", "label": "Background", "default": "#FFFFFF" },
+    { "type": "color", "id": "card_bg", "label": "Logo card background", "default": "#F8FAFC" },
+    { "type": "color", "id": "heading_color", "label": "Logo text color", "default": "#101828" },
+    { "type": "color", "id": "text_color", "label": "Heading color", "default": "#667085" },
+    { "type": "range", "id": "radius", "label": "Card radius", "min": 8, "max": 30, "step": 1, "default": 18 },
+    { "type": "range", "id": "padding", "label": "Vertical padding", "min": 20, "max": 100, "step": 4, "default": 48 }
+  ]
+}
+{% endschema %}

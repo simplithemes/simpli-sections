@@ -1,0 +1,162 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-announcement ss-announcement-{{ uid }}">
+  <div class="ss-announcement__inner">
+    {% if block.settings.badge_text != blank %}
+      <span class="ss-announcement__badge">{{ block.settings.badge_text }}</span>
+    {% endif %}
+
+    <span class="ss-announcement__message">{{ block.settings.message }}</span>
+
+    {% if block.settings.button_text != blank and block.settings.button_link != blank %}
+      <a href="{{ block.settings.button_link }}" class="ss-announcement__button">
+        {{ block.settings.button_text }}
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .ss-announcement-{{ uid }} {
+    background: {{ block.settings.background }};
+    color: {{ block.settings.text_color }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-announcement-{{ uid }} .ss-announcement__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .ss-announcement-{{ uid }} .ss-announcement__badge {
+    background: {{ block.settings.badge_bg }};
+    color: {{ block.settings.badge_color }};
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .ss-announcement-{{ uid }} .ss-announcement__message {
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: 700;
+  }
+
+  .ss-announcement-{{ uid }} .ss-announcement__button {
+    background: {{ block.settings.button_bg }};
+    color: {{ block.settings.button_color }};
+    padding: 8px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  @media(max-width: 749px) {
+    .ss-announcement-{{ uid }} .ss-announcement__message {
+      width: 100%;
+      font-size: {{ block.settings.mobile_font_size }}px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Limited Offer"
+    },
+    {
+      "type": "text",
+      "id": "message",
+      "label": "Message",
+      "default": "Free shipping on all prepaid orders."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "color_background",
+      "id": "background",
+      "label": "Background",
+      "default": "linear-gradient(135deg, #101828, #3A084E)"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge text color",
+      "default": "#3A084E"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text color",
+      "default": "#101828"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Vertical padding",
+      "min": 6,
+      "max": 40,
+      "step": 2,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Desktop font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_font_size",
+      "label": "Mobile font size",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    }
+  ]
+}
+{% endschema %}

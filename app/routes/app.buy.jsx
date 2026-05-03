@@ -3,11 +3,6 @@ import { useLoaderData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { SECTION_CATALOG } from "../data/sections";
 
-const SECTION_DISPLAY_NAMES = {
-  pro_offer_bar: "Pro Offer Bar",
-  trust_badges: "Trust Badges",
-};
-
 function getSectionByHandle(handle) {
   return SECTION_CATALOG.find((item) => item.handle === handle) || null;
 }
@@ -27,6 +22,21 @@ export async function loader({ request }) {
 
   if (!section || section.status !== "live") {
     throw new Response("Invalid or unavailable section", { status: 404 });
+  }
+
+  const isFree = Number(section.price) === 0 || section.type === "free";
+
+  if (isFree) {
+    const redirectUrl = new URL("/app/additional", url.origin);
+    if (host) redirectUrl.searchParams.set("host", host);
+    if (shop) redirectUrl.searchParams.set("shop", shop);
+
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: `${redirectUrl.pathname}${redirectUrl.search}`,
+      },
+    });
   }
 
   if (!host || !shop) {
@@ -83,7 +93,7 @@ export async function loader({ request }) {
   `;
 
   const variables = {
-    name: `Simpli Sections — ${SECTION_DISPLAY_NAMES[section.handle] || section.title}`,
+    name: `Simpli Sections — ${section.title}`,
     returnUrl: returnUrl.toString(),
     price: {
       amount: Number(section.price),

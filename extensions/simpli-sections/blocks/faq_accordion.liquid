@@ -1,0 +1,203 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-faq ss-faq-{{ uid }}">
+  <div class="ss-faq__inner">
+    <div class="ss-faq__header">
+      <h2>{{ block.settings.heading }}</h2>
+      <p>{{ block.settings.subheading }}</p>
+    </div>
+
+    {% for i in (1..5) %}
+      {% assign q_key = 'question_' | append: i %}
+      {% assign a_key = 'answer_' | append: i %}
+
+      {% if block.settings[q_key] != blank %}
+        <details class="ss-faq__item">
+          <summary>{{ block.settings[q_key] }}</summary>
+          <div>{{ block.settings[a_key] }}</div>
+        </details>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .ss-faq-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-faq-{{ uid }} .ss-faq__inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .ss-faq-{{ uid }} .ss-faq__header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .ss-faq-{{ uid }} h2 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: clamp(28px, 4vw, 44px);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .ss-faq-{{ uid }} p {
+    color: {{ block.settings.text_color }};
+    margin: 12px 0 0;
+    font-size: 16px;
+  }
+
+  .ss-faq-{{ uid }} .ss-faq__item {
+    background: {{ block.settings.card_bg }};
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: {{ block.settings.radius }}px;
+    margin-bottom: 12px;
+    padding: 0 18px;
+    box-shadow: 0 10px 28px rgba(15,23,42,0.05);
+  }
+
+  .ss-faq-{{ uid }} summary {
+    cursor: pointer;
+    padding: 18px 0;
+    font-weight: 800;
+    color: {{ block.settings.heading_color }};
+    list-style: none;
+  }
+
+  .ss-faq-{{ uid }} summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ss-faq-{{ uid }} .ss-faq__item div {
+    color: {{ block.settings.text_color }};
+    line-height: 1.7;
+    padding-bottom: 18px;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently asked questions"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Everything customers need to know before buying."
+    },
+    {
+      "type": "text",
+      "id": "question_1",
+      "label": "Question 1",
+      "default": "How long does shipping take?"
+    },
+    {
+      "type": "textarea",
+      "id": "answer_1",
+      "label": "Answer 1",
+      "default": "Orders are usually shipped within 24 to 48 hours."
+    },
+    {
+      "type": "text",
+      "id": "question_2",
+      "label": "Question 2",
+      "default": "Do you offer returns?"
+    },
+    {
+      "type": "textarea",
+      "id": "answer_2",
+      "label": "Answer 2",
+      "default": "Yes, we offer easy returns as per our return policy."
+    },
+    {
+      "type": "text",
+      "id": "question_3",
+      "label": "Question 3",
+      "default": "Is online payment secure?"
+    },
+    {
+      "type": "textarea",
+      "id": "answer_3",
+      "label": "Answer 3",
+      "default": "Yes, all payments are processed through secure payment gateways."
+    },
+    {
+      "type": "text",
+      "id": "question_4",
+      "label": "Question 4",
+      "default": "Can I track my order?"
+    },
+    {
+      "type": "textarea",
+      "id": "answer_4",
+      "label": "Answer 4",
+      "default": "Yes, tracking details are shared once the order is shipped."
+    },
+    {
+      "type": "text",
+      "id": "question_5",
+      "label": "Question 5",
+      "default": "Do you provide support?"
+    },
+    {
+      "type": "textarea",
+      "id": "answer_5",
+      "label": "Answer 5",
+      "default": "Yes, our support team is available to help you."
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#F8FAFC"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "FAQ card background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#101828"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#667085"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card radius",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Vertical padding",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "default": 60
+    }
+  ]
+}
+{% endschema %}

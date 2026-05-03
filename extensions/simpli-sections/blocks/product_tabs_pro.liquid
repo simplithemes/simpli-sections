@@ -1,0 +1,153 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-product-tabs ss-product-tabs-{{ uid }}">
+  <div class="ss-product-tabs__inner">
+    <div class="ss-product-tabs__buttons">
+      <button type="button" class="is-active" data-tab="1">{{ block.settings.tab_1_title }}</button>
+      <button type="button" data-tab="2">{{ block.settings.tab_2_title }}</button>
+      <button type="button" data-tab="3">{{ block.settings.tab_3_title }}</button>
+    </div>
+
+    <div class="ss-product-tabs__content is-active" data-content="1">
+      <h3>{{ block.settings.tab_1_heading }}</h3>
+      <p>{{ block.settings.tab_1_text }}</p>
+    </div>
+
+    <div class="ss-product-tabs__content" data-content="2">
+      <h3>{{ block.settings.tab_2_heading }}</h3>
+      <p>{{ block.settings.tab_2_text }}</p>
+    </div>
+
+    <div class="ss-product-tabs__content" data-content="3">
+      <h3>{{ block.settings.tab_3_heading }}</h3>
+      <p>{{ block.settings.tab_3_text }}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ss-product-tabs-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-product-tabs-{{ uid }} .ss-product-tabs__inner {
+    max-width: 860px;
+    margin: 0 auto;
+    background: {{ block.settings.card_bg }};
+    border-radius: {{ block.settings.radius }}px;
+    padding: 18px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 22px 60px rgba(15,23,42,0.09);
+  }
+
+  .ss-product-tabs-{{ uid }} .ss-product-tabs__buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .ss-product-tabs-{{ uid }} button {
+    border: 0;
+    border-radius: 999px;
+    padding: 13px 14px;
+    background: {{ block.settings.tab_bg }};
+    color: {{ block.settings.text_color }};
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .ss-product-tabs-{{ uid }} button.is-active {
+    background: {{ block.settings.active_tab_bg }};
+    color: {{ block.settings.active_tab_color }};
+  }
+
+  .ss-product-tabs-{{ uid }} .ss-product-tabs__content {
+    display: none;
+    background: {{ block.settings.content_bg }};
+    border-radius: 20px;
+    padding: 22px;
+  }
+
+  .ss-product-tabs-{{ uid }} .ss-product-tabs__content.is-active {
+    display: block;
+  }
+
+  .ss-product-tabs-{{ uid }} h3 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: 24px;
+    letter-spacing: -0.03em;
+  }
+
+  .ss-product-tabs-{{ uid }} p {
+    color: {{ block.settings.text_color }};
+    line-height: 1.7;
+    margin: 10px 0 0;
+  }
+
+  @media(max-width: 749px) {
+    .ss-product-tabs-{{ uid }} .ss-product-tabs__buttons {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const section = document.querySelector('.ss-product-tabs-{{ uid }}');
+    if (!section) return;
+
+    const buttons = section.querySelectorAll('[data-tab]');
+    const contents = section.querySelectorAll('[data-content]');
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        const tab = button.dataset.tab;
+
+        buttons.forEach(function (item) {
+          item.classList.remove('is-active');
+        });
+
+        contents.forEach(function (item) {
+          item.classList.remove('is-active');
+        });
+
+        button.classList.add('is-active');
+        section.querySelector('[data-content="' + tab + '"]').classList.add('is-active');
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product Tabs Pro",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "tab_1_title", "label": "Tab 1 title", "default": "Description" },
+    { "type": "text", "id": "tab_1_heading", "label": "Tab 1 heading", "default": "Product details" },
+    { "type": "textarea", "id": "tab_1_text", "label": "Tab 1 text", "default": "Add detailed product description, usage instructions, ingredients or materials." },
+
+    { "type": "text", "id": "tab_2_title", "label": "Tab 2 title", "default": "Shipping" },
+    { "type": "text", "id": "tab_2_heading", "label": "Tab 2 heading", "default": "Shipping information" },
+    { "type": "textarea", "id": "tab_2_text", "label": "Tab 2 text", "default": "Orders are processed quickly and tracking details are shared after dispatch." },
+
+    { "type": "text", "id": "tab_3_title", "label": "Tab 3 title", "default": "Returns" },
+    { "type": "text", "id": "tab_3_heading", "label": "Tab 3 heading", "default": "Returns & support" },
+    { "type": "textarea", "id": "tab_3_text", "label": "Tab 3 text", "default": "Customers can contact support for return and product-related questions." },
+
+    { "type": "color", "id": "background", "label": "Background", "default": "#F8FAFC" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "content_bg", "label": "Content background", "default": "#F8FAFC" },
+    { "type": "color", "id": "tab_bg", "label": "Tab background", "default": "#F1F5F9" },
+    { "type": "color_background", "id": "active_tab_bg", "label": "Active tab background", "default": "linear-gradient(135deg, #101828, #3A084E)" },
+    { "type": "color", "id": "active_tab_color", "label": "Active tab text color", "default": "#FFFFFF" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#101828" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#667085" },
+    { "type": "range", "id": "radius", "label": "Radius", "min": 12, "max": 40, "step": 1, "default": 26 },
+    { "type": "range", "id": "padding", "label": "Vertical padding", "min": 24, "max": 120, "step": 4, "default": 56 }
+  ]
+}
+{% endschema %}

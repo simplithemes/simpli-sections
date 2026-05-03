@@ -1,0 +1,126 @@
+{% assign uid = block.id | replace: '-', '_' %}
+
+<section class="ss-trust-pro ss-trust-pro-{{ uid }}">
+  <div class="ss-trust-pro__box">
+    <div class="ss-trust-pro__header">
+      <span>{{ block.settings.badge }}</span>
+      <h2>{{ block.settings.heading }}</h2>
+      <p>{{ block.settings.subheading }}</p>
+    </div>
+
+    <div class="ss-trust-pro__grid">
+      <div><strong>{{ block.settings.metric_1 }}</strong><p>{{ block.settings.label_1 }}</p></div>
+      <div><strong>{{ block.settings.metric_2 }}</strong><p>{{ block.settings.label_2 }}</p></div>
+      <div><strong>{{ block.settings.metric_3 }}</strong><p>{{ block.settings.label_3 }}</p></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ss-trust-pro-{{ uid }} {
+    background: {{ block.settings.background }};
+    padding: {{ block.settings.padding }}px 16px;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__box {
+    max-width: 980px;
+    margin: 0 auto;
+    background: {{ block.settings.card_bg }};
+    border-radius: {{ block.settings.radius }}px;
+    padding: 34px;
+    box-shadow: 0 24px 70px rgba(15,23,42,0.1);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 28px;
+  }
+
+  .ss-trust-pro-{{ uid }} span {
+    display: inline-block;
+    background: {{ block.settings.badge_bg }};
+    color: {{ block.settings.accent }};
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .ss-trust-pro-{{ uid }} h2 {
+    margin: 0;
+    color: {{ block.settings.heading_color }};
+    font-size: clamp(30px, 4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.05em;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__header p {
+    color: {{ block.settings.text_color }};
+    margin: 12px 0 0;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__grid div {
+    text-align: center;
+    background: {{ block.settings.metric_bg }};
+    border-radius: 20px;
+    padding: 22px;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__grid strong {
+    color: {{ block.settings.accent }};
+    font-size: 34px;
+    letter-spacing: -0.05em;
+  }
+
+  .ss-trust-pro-{{ uid }} .ss-trust-pro__grid p {
+    color: {{ block.settings.text_color }};
+    margin: 6px 0 0;
+    font-weight: 700;
+  }
+
+  @media(max-width: 749px) {
+    .ss-trust-pro-{{ uid }} .ss-trust-pro__box {
+      padding: 24px;
+    }
+
+    .ss-trust-pro-{{ uid }} .ss-trust-pro__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Trust Box Pro",
+  "target": "section",
+  "settings": [
+    { "type": "text", "id": "badge", "label": "Badge", "default": "Trusted brand" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Built to earn customer trust" },
+    { "type": "textarea", "id": "subheading", "label": "Subheading", "default": "Show proof, ratings, delivery confidence or brand credibility in one premium section." },
+    { "type": "text", "id": "metric_1", "label": "Metric 1", "default": "10K+" },
+    { "type": "text", "id": "label_1", "label": "Label 1", "default": "Happy customers" },
+    { "type": "text", "id": "metric_2", "label": "Metric 2", "default": "4.8★" },
+    { "type": "text", "id": "label_2", "label": "Label 2", "default": "Average rating" },
+    { "type": "text", "id": "metric_3", "label": "Metric 3", "default": "24h" },
+    { "type": "text", "id": "label_3", "label": "Label 3", "default": "Fast dispatch" },
+    { "type": "color", "id": "background", "label": "Background", "default": "#F8FAFC" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#FFFFFF" },
+    { "type": "color", "id": "metric_bg", "label": "Metric background", "default": "#F8FAFC" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#101828" },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#667085" },
+    { "type": "color", "id": "accent", "label": "Accent", "default": "#3A084E" },
+    { "type": "color", "id": "badge_bg", "label": "Badge background", "default": "#F3E8FF" },
+    { "type": "range", "id": "radius", "label": "Radius", "min": 12, "max": 40, "step": 1, "default": 28 },
+    { "type": "range", "id": "padding", "label": "Vertical padding", "min": 24, "max": 120, "step": 4, "default": 64 }
+  ]
+}
+{% endschema %}
