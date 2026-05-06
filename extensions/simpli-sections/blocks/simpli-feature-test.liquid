@@ -1,0 +1,56 @@
+<div
+  class="simpli-feature"
+  data-type="{{ block.settings.feature_type }}"
+  data-heading="{{ block.settings.heading | escape }}"
+  data-content="{{ block.settings.content | escape }}"
+  data-bg="{{ block.settings.background }}"
+  data-text="{{ block.settings.text_color }}"
+>
+</div>
+
+{{ 'simpli-feature-engine.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'simpli-feature-engine.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Simpli Feature Test",
+  "target": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "feature_type",
+      "label": "Feature type",
+      "options": [
+        { "value": "announcement_bar", "label": "Announcement Bar" },
+        { "value": "trust_badges", "label": "Trust Badges" },
+        { "value": "faq_accordion", "label": "FAQ Accordion" }
+      ],
+      "default": "announcement_bar"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Free Shipping on Orders Above ₹999"
+    },
+    {
+      "type": "textarea",
+      "id": "content",
+      "label": "Content",
+      "default": "Fast Shipping|Secure Checkout|Easy Returns"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#111111"
+    }
+  ]
+}
+{% endschema %}

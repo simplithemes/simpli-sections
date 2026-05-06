@@ -1,0 +1,248 @@
+{% liquid
+  assign sid = block.id | replace: '_', ''
+  assign collection = collections[block.settings.collection]
+%}
+
+<div class="ss-fc ss-fc-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ss-fc__wrap">
+
+    {% if block.settings.heading != blank %}
+      <h2>{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    {% if collection != blank and collection.products_count > 0 %}
+      <div class="ss-fc__grid">
+        {% for product in collection.products limit: block.settings.limit %}
+          <a href="{{ product.url }}" class="ss-fc__card">
+            <div class="ss-fc__img">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                >
+              {% endif %}
+            </div>
+
+            <div class="ss-fc__info">
+              <h3>{{ product.title }}</h3>
+
+              <div class="ss-fc__price">
+                {{ product.price | money }}
+                {% if product.compare_at_price > product.price %}
+                  <span>{{ product.compare_at_price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="ss-fc__empty">
+        Select a collection to show products.
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<style>
+.ss-fc-{{ sid }}{
+  background:{{ block.settings.bg }};
+  padding:{{ block.settings.pad }}px 16px;
+  color:{{ block.settings.text_color }};
+}
+.ss-fc-{{ sid }} .ss-fc__wrap{
+  max-width:{{ block.settings.width }}px;
+  margin:auto;
+}
+.ss-fc-{{ sid }} h2{
+  margin:0 0 20px;
+  font-size:clamp(22px,3vw,{{ block.settings.heading_size }}px);
+  line-height:1.15;
+  color:inherit;
+}
+.ss-fc-{{ sid }} .ss-fc__grid{
+  display:grid;
+  grid-template-columns:repeat({{ block.settings.columns }},1fr);
+  gap:16px;
+}
+.ss-fc-{{ sid }} .ss-fc__card{
+  text-decoration:none;
+  color:inherit;
+  border-radius:{{ block.settings.radius }}px;
+  overflow:hidden;
+  background:{{ block.settings.card_bg }};
+  border:1px solid {{ block.settings.border }};
+  box-shadow:0 10px 28px rgba(0,0,0,.04);
+}
+.ss-fc-{{ sid }} .ss-fc__img{
+  aspect-ratio:1/1;
+  overflow:hidden;
+  background:#f4f4f4;
+}
+.ss-fc-{{ sid }} img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .25s ease;
+}
+.ss-fc-{{ sid }} .ss-fc__card:hover img{
+  transform:scale(1.04);
+}
+.ss-fc-{{ sid }} .ss-fc__info{
+  padding:12px;
+}
+.ss-fc-{{ sid }} h3{
+  font-size:14px;
+  line-height:1.35;
+  margin:0 0 6px;
+  color:inherit;
+}
+.ss-fc-{{ sid }} .ss-fc__price{
+  font-size:14px;
+  font-weight:800;
+}
+.ss-fc-{{ sid }} .ss-fc__price span{
+  text-decoration:line-through;
+  opacity:.5;
+  margin-left:6px;
+  font-weight:600;
+}
+.ss-fc-{{ sid }} .ss-fc__empty{
+  padding:24px;
+  border-radius:{{ block.settings.radius }}px;
+  background:{{ block.settings.card_bg }};
+  border:1px dashed {{ block.settings.border }};
+  color:inherit;
+  opacity:.7;
+  font-size:14px;
+}
+@media(max-width:749px){
+  .ss-fc-{{ sid }}{
+    padding:{{ block.settings.mobile_pad }}px 14px;
+  }
+  .ss-fc-{{ sid }} .ss-fc__grid{
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+    scroll-snap-type:x mandatory;
+    scrollbar-width:none;
+  }
+  .ss-fc-{{ sid }} .ss-fc__grid::-webkit-scrollbar{
+    display:none;
+  }
+  .ss-fc-{{ sid }} .ss-fc__card{
+    min-width:72%;
+    scroll-snap-align:start;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "SS Featured Collection",
+  "target": "section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Product limit",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#151515"
+    },
+    {
+      "type": "color",
+      "id": "border",
+      "label": "Border",
+      "default": "#eeeeee"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 22,
+      "max": 40,
+      "step": 1,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "pad",
+      "label": "Desktop vertical padding",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_pad",
+      "label": "Mobile vertical padding",
+      "min": 16,
+      "max": 70,
+      "step": 2,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card radius",
+      "min": 6,
+      "max": 28,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Content width",
+      "min": 900,
+      "max": 1600,
+      "step": 50,
+      "default": 1200
+    }
+  ]
+}
+{% endschema %}

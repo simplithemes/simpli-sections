@@ -6,11 +6,10 @@ import { SECTION_CATALOG } from "../data/sections";
 const META_NAMESPACE = "simpli_sections";
 const META_KEY = "unlocked_sections";
 
-const PURCHASE_NAME_TO_HANDLE = {
-  "Simpli Sections — Pro Offer Bar": "pro_offer_bar",
-  "Simpli Sections — Trust Badges": "trust_badges",
-  "Simpli Sections — Bundle Builder": "bundle_builder",
-};
+const PURCHASE_NAME_TO_HANDLE = SECTION_CATALOG.reduce((acc, section) => {
+  acc[`Simpli Sections — ${section.title}`] = section.handle;
+  return acc;
+}, {});
 
 const FILTERS = [
   { label: "All", value: "all" },
@@ -219,7 +218,7 @@ function getBuyHref({ section, location }) {
 function AlertBanner({ status, section }) {
   if (!status) return null;
 
-  const isSuccess = status === "success";
+  const isSuccess = status === "success" || status === "active";
   const isCancelled = status === "cancelled";
 
   if (!isSuccess && !isCancelled) return null;

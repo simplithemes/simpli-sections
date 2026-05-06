@@ -1,69 +1,146 @@
-{% assign uid = block.id | replace: '-', '_' %}
+{% assign sid = block.id | replace: '_', '' | downcase %}
+{% assign layout = block.settings.layout %}
+{% assign msg1 = block.settings.message_1 %}
+{% assign msg2 = block.settings.message_2 %}
+{% assign msg3 = block.settings.message_3 %}
+{% assign msg4 = block.settings.message_4 %}
+{% assign brand = block.settings.brand_text %}
 
-<section class="ss-announcement ss-announcement-{{ uid }}">
-  <div class="ss-announcement__inner">
-    {% if block.settings.badge_text != blank %}
-      <span class="ss-announcement__badge">{{ block.settings.badge_text }}</span>
-    {% endif %}
+{% if block.settings.link != blank %}
+  <a href="{{ block.settings.link }}" class="ss-ann ss-ann-{{ sid }} ss-ann--{{ layout }}">
+{% else %}
+  <div class="ss-ann ss-ann-{{ sid }} ss-ann--{{ layout }}">
+{% endif %}
 
-    <span class="ss-announcement__message">{{ block.settings.message }}</span>
+  {% if layout == 'marquee' %}
+    <div class="ss-ann-track">
+      {% for i in (1..2) %}
+        <div class="ss-ann-row">
+          {% if brand != blank %}<strong>{{ brand }}</strong><span>•</span>{% endif %}
+          {% if msg1 != blank %}<b>{{ msg1 }}</b><span>•</span>{% endif %}
+          {% if brand != blank %}<strong>{{ brand }}</strong><span>•</span>{% endif %}
+          {% if msg2 != blank %}<b>{{ msg2 }}</b><span>•</span>{% endif %}
+          {% if brand != blank %}<strong>{{ brand }}</strong><span>•</span>{% endif %}
+          {% if msg3 != blank %}<b>{{ msg3 }}</b><span>•</span>{% endif %}
+          {% if msg4 != blank %}<b>{{ msg4 }}</b><span>•</span>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
 
-    {% if block.settings.button_text != blank and block.settings.button_link != blank %}
-      <a href="{{ block.settings.button_link }}" class="ss-announcement__button">
-        {{ block.settings.button_text }}
-      </a>
-    {% endif %}
+  {% elsif layout == 'center' %}
+    <div class="ss-ann-center">
+      {% if brand != blank %}<strong>{{ brand }}</strong>{% endif %}
+      {% if msg1 != blank %}<span>{{ msg1 }}</span>{% endif %}
+    </div>
+
+  {% else %}
+    <div class="ss-ann-pills">
+      {% if msg1 != blank %}<span>{{ msg1 }}</span>{% endif %}
+      {% if msg2 != blank %}<span>{{ msg2 }}</span>{% endif %}
+      {% if msg3 != blank %}<span>{{ msg3 }}</span>{% endif %}
+    </div>
+  {% endif %}
+
+{% if block.settings.link != blank %}
+  </a>
+{% else %}
   </div>
-</section>
+{% endif %}
 
 <style>
-  .ss-announcement-{{ uid }} {
-    background: {{ block.settings.background }};
-    color: {{ block.settings.text_color }};
-    padding: {{ block.settings.padding }}px 16px;
-  }
-
-  .ss-announcement-{{ uid }} .ss-announcement__inner {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-
-  .ss-announcement-{{ uid }} .ss-announcement__badge {
-    background: {{ block.settings.badge_bg }};
-    color: {{ block.settings.badge_color }};
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-  }
-
-  .ss-announcement-{{ uid }} .ss-announcement__message {
-    font-size: {{ block.settings.font_size }}px;
-    font-weight: 700;
-  }
-
-  .ss-announcement-{{ uid }} .ss-announcement__button {
-    background: {{ block.settings.button_bg }};
-    color: {{ block.settings.button_color }};
-    padding: 8px 14px;
-    border-radius: 999px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  @media(max-width: 749px) {
-    .ss-announcement-{{ uid }} .ss-announcement__message {
-      width: 100%;
-      font-size: {{ block.settings.mobile_font_size }}px;
-    }
-  }
+.ss-ann-{{ sid }}{
+  --bg:{{ block.settings.bg }};
+  --txt:{{ block.settings.text }};
+  --accent:{{ block.settings.accent }};
+  --h:{{ block.settings.height }}px;
+  --fs:{{ block.settings.font_size }}px;
+  display:block;
+  width:100%;
+  min-height:var(--h);
+  background:var(--bg);
+  color:var(--txt);
+  text-decoration:none;
+  overflow:hidden;
+  font-size:var(--fs);
+  line-height:1.2;
+}
+.ss-ann-{{ sid }} *{box-sizing:border-box}
+.ss-ann-{{ sid }} strong{
+  font-size:calc(var(--fs) + 12px);
+  font-weight:900;
+  letter-spacing:-.04em;
+  color:var(--txt);
+  white-space:nowrap;
+}
+.ss-ann-{{ sid }} b{
+  font-weight:800;
+  white-space:nowrap;
+  color:var(--txt);
+}
+.ss-ann-{{ sid }} span{
+  color:var(--txt);
+  opacity:.95;
+  white-space:nowrap;
+}
+.ss-ann-{{ sid }}.ss-ann--marquee{
+  display:flex;
+  align-items:center;
+}
+.ss-ann-{{ sid }} .ss-ann-track{
+  display:flex;
+  width:max-content;
+  animation:ssAnn{{ sid }} {{ block.settings.speed }}s linear infinite;
+}
+.ss-ann-{{ sid }} .ss-ann-row{
+  display:flex;
+  align-items:center;
+  gap:34px;
+  padding-right:34px;
+  min-width:max-content;
+}
+.ss-ann-{{ sid }}.ss-ann--center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:10px 18px;
+}
+.ss-ann-{{ sid }} .ss-ann-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  font-weight:800;
+}
+.ss-ann-{{ sid }}.ss-ann--pills{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 14px;
+}
+.ss-ann-{{ sid }} .ss-ann-pills{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.ss-ann-{{ sid }} .ss-ann-pills span{
+  padding:8px 13px;
+  border-radius:999px;
+  background:var(--accent);
+  font-weight:850;
+}
+@keyframes ssAnn{{ sid }}{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+@media(max-width:749px){
+  .ss-ann-{{ sid }}{--h:{{ block.settings.mobile_height }}px;--fs:{{ block.settings.mobile_font_size }}px}
+  .ss-ann-{{ sid }} strong{font-size:calc(var(--fs) + 8px)}
+  .ss-ann-{{ sid }} .ss-ann-row{gap:22px;padding-right:22px}
+}
 </style>
 
 {% schema %}
@@ -72,90 +149,113 @@
   "target": "section",
   "settings": [
     {
-      "type": "text",
-      "id": "badge_text",
-      "label": "Badge text",
-      "default": "Limited Offer"
+      "type": "select",
+      "id": "layout",
+      "label": "Design style",
+      "default": "marquee",
+      "options": [
+        { "value": "marquee", "label": "Moving logo strip" },
+        { "value": "center", "label": "Centered premium bar" },
+        { "value": "pills", "label": "Pill highlights" }
+      ]
     },
     {
       "type": "text",
-      "id": "message",
-      "label": "Message",
-      "default": "Free shipping on all prepaid orders."
+      "id": "brand_text",
+      "label": "Brand text",
+      "default": "Restofit"
     },
     {
       "type": "text",
-      "id": "button_text",
-      "label": "Button text",
-      "default": "Shop now"
+      "id": "message_1",
+      "label": "Message 1",
+      "default": "Orthopedic Mattress India"
+    },
+    {
+      "type": "text",
+      "id": "message_2",
+      "label": "Message 2",
+      "default": "Premium Mattress in India"
+    },
+    {
+      "type": "text",
+      "id": "message_3",
+      "label": "Message 3",
+      "default": "Memory Foam Mattress India"
+    },
+    {
+      "type": "text",
+      "id": "message_4",
+      "label": "Message 4",
+      "default": "Best Mattress for Back Pain"
     },
     {
       "type": "url",
-      "id": "button_link",
-      "label": "Button link"
+      "id": "link",
+      "label": "Optional link"
     },
     {
-      "type": "color_background",
-      "id": "background",
+      "type": "color",
+      "id": "bg",
       "label": "Background",
-      "default": "linear-gradient(135deg, #101828, #3A084E)"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text color",
-      "default": "#FFFFFF"
-    },
-    {
-      "type": "color",
-      "id": "badge_bg",
-      "label": "Badge background",
-      "default": "#FFFFFF"
-    },
-    {
-      "type": "color",
-      "id": "badge_color",
-      "label": "Badge text color",
       "default": "#3A084E"
     },
     {
       "type": "color",
-      "id": "button_bg",
-      "label": "Button background",
-      "default": "#FFFFFF"
+      "id": "text",
+      "label": "Text color",
+      "default": "#ffffff"
     },
     {
       "type": "color",
-      "id": "button_color",
-      "label": "Button text color",
-      "default": "#101828"
+      "id": "accent",
+      "label": "Pill background",
+      "default": "#5B136F"
     },
     {
       "type": "range",
-      "id": "padding",
-      "label": "Vertical padding",
-      "min": 6,
-      "max": 40,
+      "id": "height",
+      "label": "Desktop height",
+      "min": 36,
+      "max": 90,
       "step": 2,
-      "default": 12
+      "default": 62
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 32,
+      "max": 80,
+      "step": 2,
+      "default": 50
     },
     {
       "type": "range",
       "id": "font_size",
-      "label": "Desktop font size",
-      "min": 12,
-      "max": 24,
+      "label": "Desktop text size",
+      "min": 10,
+      "max": 22,
       "step": 1,
-      "default": 15
+      "default": 16
     },
     {
       "type": "range",
       "id": "mobile_font_size",
-      "label": "Mobile font size",
-      "min": 11,
-      "max": 20,
+      "label": "Mobile text size",
+      "min": 10,
+      "max": 18,
       "step": 1,
-      "default": 14
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Marquee speed",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "default": 22
     }
   ]
 }

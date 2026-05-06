@@ -1,10 +1,5 @@
 import { useLocation, useOutletContext, useParams } from "react-router";
 import { SECTION_CATALOG } from "../data/sections";
-import proOfferBarImage from "../assets/pro-offer-bar.png";
-
-const SECTION_IMAGES = {
-  pro_offer_bar: proOfferBarImage,
-};
 
 const CATEGORY_FALLBACK_WHY = {
   conversion: {
@@ -53,18 +48,6 @@ const CATEGORY_FALLBACK_WHY = {
       "Cart value opportunities become visible",
       "Customers get motivation to add more",
       "Checkout experience feels more guided",
-    ],
-  },
-  upsell: {
-    without: [
-      "Related products are not promoted at the right time",
-      "Average order value may stay low",
-      "Customers miss useful add-ons",
-    ],
-    with: [
-      "Relevant add-ons become easy to notice",
-      "Average order value can improve",
-      "Customers discover more products naturally",
     ],
   },
   bundles: {
@@ -123,6 +106,10 @@ function getImprovements(section) {
     return ["Cart value growth", "Reward visibility", "Better checkout flow"];
   }
 
+  if (section.tags?.includes("Visual Proof")) {
+    return ["Better visual proof", "Higher buyer confidence", "Premium storytelling"];
+  }
+
   return DEFAULT_IMPROVEMENTS;
 }
 
@@ -130,8 +117,8 @@ function getTemplateFromPlacement(placement = "") {
   const value = placement.toLowerCase();
 
   if (value.includes("cart")) return "cart";
-  if (value.includes("product")) return "product";
   if (value.includes("homepage")) return "index";
+  if (value.includes("product")) return "product";
 
   return "product";
 }
@@ -174,8 +161,8 @@ export default function SectionDetailPage() {
   if (!section) {
     return (
       <div style={{ padding: 32 }}>
-        <h1>Section not found</h1>
-        <a href={`/app${qs}`}>Back to sections</a>
+        <h1>Feature not found</h1>
+        <a href={`/app${qs}`}>Back to features</a>
       </div>
     );
   }
@@ -184,7 +171,7 @@ export default function SectionDetailPage() {
   const isFree = section.price === 0;
   const isUnlocked =
     isFree || hasUnlimitedPlan || unlocked.includes(section.handle);
-  const sectionImage = SECTION_IMAGES[section.handle];
+  const sectionImage = section.image || "";
   const why = getWhy(section);
   const improvements = getImprovements(section);
 
@@ -209,8 +196,8 @@ export default function SectionDetailPage() {
     : isUnlocked
       ? "Add to theme editor"
       : isFree
-        ? "Add free section"
-        : `Unlock this section for $${section.price}`;
+        ? "Add free feature"
+        : `Unlock this feature for $${section.price}`;
 
   return (
     <div
@@ -218,10 +205,48 @@ export default function SectionDetailPage() {
         maxWidth: 1180,
         margin: "0 auto",
         padding: "22px 20px 44px",
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontFamily:
+          'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         color: "#111827",
+        background: "#f8fafc",
       }}
     >
+      <style>
+        {`
+          .simpli-detail-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) 360px;
+            gap: 22px;
+            align-items: start;
+          }
+
+          .simpli-detail-preview {
+  max-height: 430px;
+}
+
+          @media (max-width: 980px) {
+            .simpli-detail-layout {
+              grid-template-columns: 1fr;
+            }
+
+            .simpli-detail-sidebar {
+              position: static !important;
+            }
+          }
+
+          @media (max-width: 640px) {
+            .simpli-detail-preview {
+              height: 260px;
+            }
+
+            .simpli-detail-title {
+              font-size: 28px !important;
+              letter-spacing: -0.035em !important;
+            }
+          }
+        `}
+      </style>
+
       <a
         href={`/app${qs}`}
         style={{
@@ -230,20 +255,13 @@ export default function SectionDetailPage() {
           color: "#4b5563",
           textDecoration: "none",
           fontSize: 13,
-          fontWeight: 800,
+          fontWeight: 500,
         }}
       >
-        ← Back to sections
+        ← Back to features
       </a>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1.2fr) 360px",
-          gap: 22,
-          alignItems: "start",
-        }}
-      >
+      <div className="simpli-detail-layout">
         <div>
           <div
             style={{
@@ -253,31 +271,33 @@ export default function SectionDetailPage() {
               borderRadius: 24,
               padding: 14,
               marginBottom: 18,
+              boxShadow: "0 8px 22px rgba(15,23,42,0.04)",
             }}
           >
             {sectionImage ? (
-              <img
-                src={sectionImage}
-                alt={section.title}
-                style={{
-                  width: "100%",
-                  height: 430,
-                  objectFit: "cover",
-                  borderRadius: 18,
-                  display: "block",
-                }}
-              />
+  <img
+  className="simpli-detail-preview"
+  src={sectionImage}
+  alt={section.title}
+  style={{
+    width: "100%",
+    height: "auto",
+    maxHeight: 430,
+    objectFit: "contain",
+    display: "block",
+  }}
+/>
             ) : (
               <div
+                className="simpli-detail-preview"
                 style={{
-                  height: 430,
                   borderRadius: 18,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   background:
                     "linear-gradient(135deg, rgba(15,23,42,0.08), rgba(99,102,241,0.14))",
-                  fontWeight: 900,
+                  fontWeight: 500,
                   color: "#475569",
                   textAlign: "center",
                   padding: 24,
@@ -288,6 +308,44 @@ export default function SectionDetailPage() {
             )}
           </div>
 
+          {section.whyThisMatters && (
+            <div
+              style={{
+                background: "#ffffff",
+                border: "1px solid rgba(15,23,42,0.08)",
+                borderRadius: 22,
+                padding: 22,
+                marginBottom: 18,
+                boxShadow: "0 8px 22px rgba(15,23,42,0.035)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: "#6b7280",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  marginBottom: 8,
+                }}
+              >
+                Why this feature matters
+              </div>
+
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 14,
+                  fontWeight: 400,
+                  lineHeight: 1.75,
+                  color: "#374151",
+                }}
+              >
+                {section.whyThisMatters}
+              </p>
+            </div>
+          )}
+
           <div
             style={{
               background: "#ffffff",
@@ -295,16 +353,19 @@ export default function SectionDetailPage() {
               borderRadius: 22,
               padding: 22,
               marginBottom: 18,
+              boxShadow: "0 8px 22px rgba(15,23,42,0.035)",
             }}
           >
             <h2
               style={{
                 margin: 0,
                 fontSize: 22,
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.035em",
+                fontWeight: 600,
+                lineHeight: 1.15,
               }}
             >
-              Why this section matters
+              What changes after adding this feature
             </h2>
 
             <div
@@ -319,13 +380,29 @@ export default function SectionDetailPage() {
                 style={{
                   padding: 14,
                   borderRadius: 16,
-                  background: "#fef2f2",
-                  border: "1px solid #fecaca",
+                  background: "#fff7f7",
+                  border: "1px solid #fee2e2",
                   color: "#991b1b",
                 }}
               >
-                <strong>Without this</strong>
-                <div style={{ marginTop: 8, lineHeight: 1.7, fontSize: 13 }}>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "#991b1b",
+                  }}
+                >
+                  Without this
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 8,
+                    lineHeight: 1.7,
+                    fontSize: 13,
+                    fontWeight: 400,
+                  }}
+                >
                   {(why.without || DEFAULT_WHY.without).map((item) => (
                     <div key={item}>• {item}</div>
                   ))}
@@ -336,13 +413,29 @@ export default function SectionDetailPage() {
                 style={{
                   padding: 14,
                   borderRadius: 16,
-                  background: "#ecfdf5",
-                  border: "1px solid #bbf7d0",
+                  background: "#f0fdf4",
+                  border: "1px solid #dcfce7",
                   color: "#166534",
                 }}
               >
-                <strong>With this</strong>
-                <div style={{ marginTop: 8, lineHeight: 1.7, fontSize: 13 }}>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "#166534",
+                  }}
+                >
+                  With this
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 8,
+                    lineHeight: 1.7,
+                    fontSize: 13,
+                    fontWeight: 400,
+                  }}
+                >
                   {(why.with || DEFAULT_WHY.with).map((item) => (
                     <div key={item}>• {item}</div>
                   ))}
@@ -358,16 +451,19 @@ export default function SectionDetailPage() {
               borderRadius: 22,
               padding: 22,
               marginBottom: 18,
+              boxShadow: "0 8px 22px rgba(15,23,42,0.035)",
             }}
           >
             <h2
               style={{
                 margin: 0,
                 fontSize: 22,
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.035em",
+                fontWeight: 600,
+                lineHeight: 1.15,
               }}
             >
-              Why merchants use this section
+              Where merchants use this feature
             </h2>
 
             <div
@@ -386,8 +482,9 @@ export default function SectionDetailPage() {
                     background: "#f9fafb",
                     border: "1px solid rgba(15,23,42,0.06)",
                     fontSize: 14,
-                    fontWeight: 750,
+                    fontWeight: 400,
                     color: "#374151",
+                    lineHeight: 1.5,
                   }}
                 >
                   ✓ {useCase}
@@ -402,13 +499,16 @@ export default function SectionDetailPage() {
               border: "1px solid rgba(15,23,42,0.08)",
               borderRadius: 22,
               padding: 22,
+              boxShadow: "0 8px 22px rgba(15,23,42,0.035)",
             }}
           >
             <h2
               style={{
                 margin: 0,
                 fontSize: 22,
-                letterSpacing: "-0.04em",
+                letterSpacing: "-0.035em",
+                fontWeight: 600,
+                lineHeight: 1.15,
               }}
             >
               What this helps improve
@@ -431,7 +531,9 @@ export default function SectionDetailPage() {
                     background: "#f9fafb",
                     border: "1px solid rgba(15,23,42,0.06)",
                     fontSize: 14,
-                    fontWeight: 800,
+                    fontWeight: 500,
+                    lineHeight: 1.45,
+                    color: "#374151",
                   }}
                 >
                   {item}
@@ -442,6 +544,7 @@ export default function SectionDetailPage() {
         </div>
 
         <div
+          className="simpli-detail-sidebar"
           style={{
             position: "sticky",
             top: 18,
@@ -449,7 +552,7 @@ export default function SectionDetailPage() {
             border: "1px solid rgba(15,23,42,0.08)",
             borderRadius: 24,
             padding: 22,
-            boxShadow: "0 12px 34px rgba(15,23,42,0.07)",
+            boxShadow: "0 12px 34px rgba(15,23,42,0.06)",
           }}
         >
           <div
@@ -463,7 +566,7 @@ export default function SectionDetailPage() {
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 900,
+                fontWeight: 600,
                 padding: "6px 9px",
                 borderRadius: 999,
                 background: isFree ? "#ecfdf5" : "#eef2ff",
@@ -478,7 +581,7 @@ export default function SectionDetailPage() {
             <span
               style={{
                 fontSize: 11,
-                fontWeight: 900,
+                fontWeight: 600,
                 padding: "6px 9px",
                 borderRadius: 999,
                 background: isLive ? "#ecfdf5" : "#f3f4f6",
@@ -492,7 +595,7 @@ export default function SectionDetailPage() {
               <span
                 style={{
                   fontSize: 11,
-                  fontWeight: 900,
+                  fontWeight: 600,
                   padding: "6px 9px",
                   borderRadius: 999,
                   background: "#dcfce7",
@@ -505,12 +608,13 @@ export default function SectionDetailPage() {
           </div>
 
           <h1
+            className="simpli-detail-title"
             style={{
               margin: 0,
               fontSize: 34,
-              lineHeight: 1.05,
-              letterSpacing: "-0.055em",
-              fontWeight: 950,
+              lineHeight: 1.08,
+              letterSpacing: "-0.04em",
+              fontWeight: 600,
             }}
           >
             {section.title}
@@ -521,8 +625,8 @@ export default function SectionDetailPage() {
               margin: "10px 0 0",
               fontSize: 15,
               lineHeight: 1.65,
-              color: "#111827",
-              fontWeight: 800,
+              color: "#374151",
+              fontWeight: 400,
             }}
           >
             {section.hook || section.description}
@@ -534,6 +638,7 @@ export default function SectionDetailPage() {
               color: "#6b7280",
               fontSize: 14,
               lineHeight: 1.65,
+              fontWeight: 400,
             }}
           >
             {section.description}
@@ -551,7 +656,7 @@ export default function SectionDetailPage() {
             <div
               style={{
                 fontSize: 11,
-                fontWeight: 900,
+                fontWeight: 500,
                 color: "#6b7280",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
@@ -564,11 +669,47 @@ export default function SectionDetailPage() {
             <div
               style={{
                 fontSize: 14,
-                fontWeight: 850,
+                fontWeight: 500,
                 color: "#111827",
+                lineHeight: 1.45,
               }}
             >
               {section.placement || "Store pages"}
+            </div>
+          </div>
+
+          <div
+            style={{
+              marginTop: 12,
+              padding: 14,
+              borderRadius: 16,
+              background: "#f9fafb",
+              border: "1px solid rgba(15,23,42,0.06)",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 500,
+                color: "#6b7280",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+                marginBottom: 6,
+              }}
+            >
+              Theme block
+            </div>
+
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#111827",
+                wordBreak: "break-word",
+                lineHeight: 1.45,
+              }}
+            >
+              {section.block}.liquid
             </div>
           </div>
 
@@ -585,7 +726,7 @@ export default function SectionDetailPage() {
                 key={tag}
                 style={{
                   fontSize: 11,
-                  fontWeight: 800,
+                  fontWeight: 500,
                   padding: "6px 8px",
                   borderRadius: 999,
                   background:
@@ -614,8 +755,8 @@ export default function SectionDetailPage() {
             <span
               style={{
                 fontSize: 38,
-                fontWeight: 950,
-                letterSpacing: "-0.06em",
+                fontWeight: 600,
+                letterSpacing: "-0.045em",
                 lineHeight: 1,
               }}
             >
@@ -628,6 +769,7 @@ export default function SectionDetailPage() {
                   color: "#6b7280",
                   fontSize: 13,
                   marginBottom: 4,
+                  fontWeight: 400,
                 }}
               >
                 one-time
@@ -653,7 +795,7 @@ export default function SectionDetailPage() {
               padding: "13px 14px",
               borderRadius: 14,
               fontSize: 14,
-              fontWeight: 950,
+              fontWeight: 600,
               pointerEvents: isLive ? "auto" : "none",
             }}
           >
@@ -667,7 +809,7 @@ export default function SectionDetailPage() {
               fontSize: 12,
               lineHeight: 1.5,
               textAlign: "center",
-              fontWeight: 650,
+              fontWeight: 400,
             }}
           >
             No coding required • Opens directly inside Shopify theme editor
@@ -685,7 +827,7 @@ export default function SectionDetailPage() {
                 padding: "12px 14px",
                 borderRadius: 14,
                 fontSize: 13,
-                fontWeight: 900,
+                fontWeight: 600,
                 border: "1px solid rgba(15,23,42,0.1)",
                 background: "#ffffff",
               }}

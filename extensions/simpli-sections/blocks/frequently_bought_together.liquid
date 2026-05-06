@@ -1,0 +1,391 @@
+{% liquid
+  assign sid = block.id | replace: '_', ''
+  assign main_product = block.settings.main_product | default: product
+%}
+
+{% if main_product %}
+<div class="ss-fbt ss-fbt-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ss-fbt__wrap">
+    {% if block.settings.heading != blank %}
+      <h2>{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ss-fbt__box">
+      <label class="ss-fbt__item is-main">
+        <input
+          type="checkbox"
+          checked
+          disabled
+          data-id="{{ main_product.selected_or_first_available_variant.id }}"
+          data-price="{{ main_product.selected_or_first_available_variant.price }}"
+        >
+
+        {% if main_product.featured_image %}
+          <img
+            src="{{ main_product.featured_image | image_url: width: 240 }}"
+            alt="{{ main_product.title | escape }}"
+          >
+        {% endif %}
+
+        <span>
+          <strong>{{ main_product.title }}</strong>
+          <small>{{ main_product.selected_or_first_available_variant.price | money }}</small>
+        </span>
+      </label>
+
+      {% for p in block.settings.products limit: 3 %}
+        {% if p %}
+          <label class="ss-fbt__item">
+            <input
+              type="checkbox"
+              checked
+              data-id="{{ p.selected_or_first_available_variant.id }}"
+              data-price="{{ p.selected_or_first_available_variant.price }}"
+            >
+
+            {% if p.featured_image %}
+              <img
+                src="{{ p.featured_image | image_url: width: 240 }}"
+                alt="{{ p.title | escape }}"
+              >
+            {% endif %}
+
+            <span>
+              <strong>{{ p.title }}</strong>
+              <small>{{ p.selected_or_first_available_variant.price | money }}</small>
+            </span>
+          </label>
+        {% endif %}
+      {% endfor %}
+
+      <div class="ss-fbt__footer">
+        <div>
+          <span>{{ block.settings.total_label }}</span>
+          <strong class="ss-fbt__total"></strong>
+        </div>
+
+        <button class="ss-fbt__btn">
+          {{ block.settings.button_text }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.querySelector('.ss-fbt-{{ sid }}');
+  if (!root || root.dataset.ready) return;
+  root.dataset.ready = '1';
+
+  const checks = root.querySelectorAll('input[type="checkbox"]');
+  const total = root.querySelector('.ss-fbt__total');
+  const btn = root.querySelector('.ss-fbt__btn');
+
+  const money = cents => {
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: '{{ cart.currency.iso_code }}'
+      }).format(cents / 100);
+    } catch(e) {
+      return (cents / 100).toFixed(2);
+    }
+  };
+
+  function update(){
+    let sum = 0;
+    checks.forEach(c => {
+      if(c.checked) sum += Number(c.dataset.price || 0);
+    });
+    total.textContent = money(sum);
+  }
+
+  checks.forEach(c => c.addEventListener('change', update));
+  update();
+
+  btn.addEventListener('click', async () => {
+    const items = [...checks]
+      .filter(c => c.checked)
+      .map(c => ({
+        id: Number(c.dataset.id),
+        quantity: 1
+      }));
+
+    if (!items.length) return;
+
+    btn.disabled = true;
+
+    try {
+      await fetch('/cart/add.js', {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Accept':'application/json'
+        },
+        body:JSON.stringify({ items })
+      });
+
+      document.dispatchEvent(new CustomEvent('cart:refresh'));
+      document.dispatchEvent(new CustomEvent('cart:open'));
+
+      btn.textContent = '{{ block.settings.added_text }}';
+
+      setTimeout(() => {
+        btn.textContent = '{{ block.settings.button_text }}';
+      }, 1600);
+    } catch(e) {
+      btn.textContent = 'Try again';
+    }
+
+    btn.disabled = false;
+  });
+})();
+</script>
+
+<style>
+.ss-fbt-{{ sid }}{
+  padding:{{ block.settings.pad_y }}px 16px;
+  background:{{ block.settings.bg }};
+  color:{{ block.settings.text_color }};
+}
+.ss-fbt-{{ sid }} .ss-fbt__wrap{
+  max-width:{{ block.settings.width }}px;
+  margin:auto;
+}
+.ss-fbt-{{ sid }} h2{
+  margin:0 0 18px;
+  font-size:clamp(22px,3vw,{{ block.settings.heading_size }}px);
+  line-height:1.15;
+}
+.ss-fbt-{{ sid }} .ss-fbt__box{
+  border:1px solid {{ block.settings.border }};
+  background:{{ block.settings.card_bg }};
+  border-radius:{{ block.settings.radius }}px;
+  padding:18px;
+  box-shadow:0 14px 36px rgba(0,0,0,.05);
+}
+.ss-fbt-{{ sid }} .ss-fbt__item{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:12px 0;
+  border-bottom:1px solid {{ block.settings.border }};
+  cursor:pointer;
+}
+.ss-fbt-{{ sid }} .ss-fbt__item:last-of-type{
+  border-bottom:0;
+}
+.ss-fbt-{{ sid }} .ss-fbt__item img{
+  width:58px;
+  height:58px;
+  border-radius:12px;
+  object-fit:cover;
+  background:#f4f4f4;
+}
+.ss-fbt-{{ sid }} input{
+  width:18px;
+  height:18px;
+  accent-color:{{ block.settings.accent }};
+}
+.ss-fbt-{{ sid }} .ss-fbt__item span{
+  flex:1;
+  min-width:0;
+}
+.ss-fbt-{{ sid }} strong{
+  display:block;
+  font-size:14px;
+  line-height:1.3;
+}
+.ss-fbt-{{ sid }} small{
+  display:block;
+  margin-top:4px;
+  opacity:.66;
+  font-size:13px;
+}
+.ss-fbt-{{ sid }} .ss-fbt__footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding-top:18px;
+}
+.ss-fbt-{{ sid }} .ss-fbt__footer span{
+  display:block;
+  font-size:12px;
+  opacity:.6;
+  margin-bottom:3px;
+}
+.ss-fbt-{{ sid }} .ss-fbt__total{
+  font-size:20px;
+}
+.ss-fbt-{{ sid }} .ss-fbt__btn{
+  border:0;
+  border-radius:{{ block.settings.button_radius }}px;
+  padding:14px 20px;
+  background:{{ block.settings.button_bg }};
+  color:{{ block.settings.button_text_color }};
+  font-weight:800;
+  cursor:pointer;
+}
+.ss-fbt-{{ sid }} .ss-fbt__btn:disabled{
+  opacity:.65;
+}
+@media(max-width:749px){
+  .ss-fbt-{{ sid }}{
+    padding:{{ block.settings.mobile_pad_y }}px 14px;
+  }
+  .ss-fbt-{{ sid }} .ss-fbt__box{
+    padding:14px;
+  }
+  .ss-fbt-{{ sid }} .ss-fbt__footer{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .ss-fbt-{{ sid }} .ss-fbt__btn{
+    width:100%;
+  }
+}
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "SS Frequently Bought",
+  "target": "section",
+  "settings": [
+    {
+      "type": "product",
+      "id": "main_product",
+      "label": "Main product",
+      "info": "Leave empty on product page to use current product"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Frequently bought products",
+      "limit": 3
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently bought together"
+    },
+    {
+      "type": "text",
+      "id": "total_label",
+      "label": "Total label",
+      "default": "Bundle total"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Add selected items"
+    },
+    {
+      "type": "text",
+      "id": "added_text",
+      "label": "Added text",
+      "default": "Added to cart"
+    },
+    {
+      "type": "color",
+      "id": "bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#fbfaf7"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#161616"
+    },
+    {
+      "type": "color",
+      "id": "border",
+      "label": "Border",
+      "default": "#e8e2d8"
+    },
+    {
+      "type": "color",
+      "id": "accent",
+      "label": "Accent",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 22,
+      "max": 42,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card radius",
+      "min": 8,
+      "max": 30,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button radius",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "pad_y",
+      "label": "Desktop padding",
+      "min": 20,
+      "max": 90,
+      "step": 2,
+      "default": 42
+    },
+    {
+      "type": "range",
+      "id": "mobile_pad_y",
+      "label": "Mobile padding",
+      "min": 18,
+      "max": 70,
+      "step": 2,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Width",
+      "min": 520,
+      "max": 1100,
+      "step": 20,
+      "default": 760
+    }
+  ]
+}
+{% endschema %}

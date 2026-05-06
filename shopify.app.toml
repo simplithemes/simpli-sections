@@ -1,10 +1,10 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
 client_id = "1834e252e45d75072a226db1f3ce1f20"
 name = "Simpli Sections"
-handle = "simpli-sections"
-
 application_url = "https://simpli-sections-production.up.railway.app"
-
 embedded = true
+handle = "simpli-sections"
 
 [build]
 automatically_update_urls_on_dev = true
@@ -12,9 +12,9 @@ automatically_update_urls_on_dev = true
 [webhooks]
 api_version = "2026-04"
 
-[[webhooks.subscriptions]]
-topics = ["app/scopes_update"]
-uri = "/webhooks/app/scopes_update"
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
 
 [auth]
 redirect_urls = [

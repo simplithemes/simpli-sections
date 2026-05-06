@@ -1,0 +1,238 @@
+{% liquid
+  assign sid = block.id | replace: '_', ''
+  assign product = block.settings.product | default: product
+%}
+
+{% if product %}
+<div class="ss-pack ss-pack-{{ sid }}" {{ block.shopify_attributes }}>
+  <div class="ss-pack__wrap">
+    {% if block.settings.heading != blank %}
+      <h2>{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    {% if block.settings.note != blank %}
+      <p class="ss-pack__note">{{ block.settings.note }}</p>
+    {% endif %}
+
+    <div class="ss-pack__grid">
+      {% for i in (1..4) %}
+        {% assign label_key = 'label_' | append: i %}
+        {% assign qty_key = 'qty_' | append: i %}
+        {% assign off_key = 'off_' | append: i %}
+        {% assign badge_key = 'badge_' | append: i %}
+
+        {% assign label = block.settings[label_key] %}
+        {% assign qty = block.settings[qty_key] %}
+        {% assign off = block.settings[off_key] %}
+        {% assign badge = block.settings[badge_key] %}
+
+        {% if label != blank %}
+          <label class="ss-pack__card {% if forloop.index == block.settings.selected %}is-active{% endif %}">
+            <input
+              type="radio"
+              name="ss-pack-{{ sid }}"
+              value="{{ qty }}"
+              data-qty="{{ qty }}"
+              {% if forloop.index == block.settings.selected %}checked{% endif %}
+            >
+
+            {% if badge != blank %}
+              <span class="ss-pack__badge">{{ badge }}</span>
+            {% endif %}
+
+            <strong>{{ label }}</strong>
+
+            <span class="ss-pack__price">
+              {{ product.selected_or_first_available_variant.price | times: qty | money }}
+            </span>
+
+            {% if off > 0 %}
+              <small>Save {{ off }}%</small>
+            {% endif %}
+          </label>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <button class="ss-pack__btn" data-variant="{{ product.selected_or_first_available_variant.id }}">
+      {{ block.settings.button_text }}
+    </button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.querySelector('.ss-pack-{{ sid }}');
+  if (!root || root.dataset.ready) return;
+  root.dataset.ready = '1';
+
+  const cards = root.querySelectorAll('.ss-pack__card');
+  const btn = root.querySelector('.ss-pack__btn');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => c.classList.remove('is-active'));
+      card.classList.add('is-active');
+    });
+  });
+
+  btn.addEventListener('click', async () => {
+    const selected = root.querySelector('input:checked');
+    const variantId = btn.dataset.variant;
+    const qty = selected ? Number(selected.dataset.qty || 1) : 1;
+
+    btn.disabled = true;
+
+    try {
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ id: variantId, quantity: qty })
+      });
+
+      document.dispatchEvent(new CustomEvent('cart:refresh'));
+      document.dispatchEvent(new CustomEvent('cart:open'));
+      btn.textContent = '{{ block.settings.added_text }}';
+      setTimeout(() => btn.textContent = '{{ block.settings.button_text }}', 1600);
+    } catch(e) {
+      btn.textContent = 'Try again';
+    }
+
+    btn.disabled = false;
+  });
+})();
+</script>
+
+<style>
+.ss-pack-{{ sid }}{
+  padding:{{ block.settings.pad_y }}px 16px;
+  background:{{ block.settings.bg }};
+  color:{{ block.settings.text_color }};
+}
+.ss-pack-{{ sid }} .ss-pack__wrap{
+  max-width:{{ block.settings.width }}px;
+  margin:auto;
+}
+.ss-pack-{{ sid }} h2{
+  margin:0 0 8px;
+  font-size:clamp(22px,3vw,{{ block.settings.heading_size }}px);
+  line-height:1.15;
+}
+.ss-pack-{{ sid }} .ss-pack__note{
+  margin:0 0 18px;
+  font-size:14px;
+  opacity:.7;
+}
+.ss-pack-{{ sid }} .ss-pack__grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.ss-pack-{{ sid }} .ss-pack__card{
+  position:relative;
+  cursor:pointer;
+  border:1px solid {{ block.settings.border }};
+  background:{{ block.settings.card_bg }};
+  border-radius:{{ block.settings.radius }}px;
+  padding:18px 14px;
+  transition:.18s ease;
+}
+.ss-pack-{{ sid }} .ss-pack__card.is-active{
+  border-color:{{ block.settings.accent }};
+  box-shadow:0 0 0 2px {{ block.settings.accent }}22;
+}
+.ss-pack-{{ sid }} input{display:none}
+.ss-pack-{{ sid }} strong{
+  display:block;
+  font-size:15px;
+  margin-bottom:8px;
+}
+.ss-pack-{{ sid }} .ss-pack__price{
+  display:block;
+  font-weight:800;
+  font-size:17px;
+}
+.ss-pack-{{ sid }} small{
+  display:block;
+  margin-top:4px;
+  color:{{ block.settings.accent }};
+  font-weight:700;
+}
+.ss-pack-{{ sid }} .ss-pack__badge{
+  position:absolute;
+  right:10px;
+  top:-10px;
+  background:{{ block.settings.accent }};
+  color:#fff;
+  border-radius:999px;
+  padding:4px 9px;
+  font-size:11px;
+  font-weight:800;
+}
+.ss-pack-{{ sid }} .ss-pack__btn{
+  width:100%;
+  margin-top:14px;
+  border:0;
+  border-radius:{{ block.settings.radius }}px;
+  padding:15px 18px;
+  background:{{ block.settings.button_bg }};
+  color:{{ block.settings.button_text_color }};
+  font-weight:800;
+  cursor:pointer;
+}
+.ss-pack-{{ sid }} .ss-pack__btn:disabled{opacity:.65}
+@media(max-width:749px){
+  .ss-pack-{{ sid }}{padding:{{ block.settings.mobile_pad_y }}px 14px}
+  .ss-pack-{{ sid }} .ss-pack__grid{grid-template-columns:1fr 1fr}
+}
+</style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "SS Pack Selector",
+  "target": "section",
+  "settings": [
+    { "type": "product", "id": "product", "label": "Product", "info": "Leave empty on product page to use current product" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Choose your pack" },
+    { "type": "text", "id": "note", "label": "Instruction note", "default": "Create product variants if you want separate pricing for each pack." },
+    { "type": "text", "id": "button_text", "label": "Button text", "default": "Add selected pack to cart" },
+    { "type": "text", "id": "added_text", "label": "Added text", "default": "Added to cart" },
+
+    { "type": "text", "id": "label_1", "label": "Pack 1 label", "default": "Pack of 1" },
+    { "type": "range", "id": "qty_1", "label": "Pack 1 quantity", "min": 1, "max": 10, "step": 1, "default": 1 },
+    { "type": "range", "id": "off_1", "label": "Pack 1 discount", "min": 0, "max": 60, "step": 5, "default": 0 },
+    { "type": "text", "id": "badge_1", "label": "Pack 1 badge" },
+
+    { "type": "text", "id": "label_2", "label": "Pack 2 label", "default": "Pack of 2" },
+    { "type": "range", "id": "qty_2", "label": "Pack 2 quantity", "min": 1, "max": 10, "step": 1, "default": 2 },
+    { "type": "range", "id": "off_2", "label": "Pack 2 discount", "min": 0, "max": 60, "step": 5, "default": 10 },
+    { "type": "text", "id": "badge_2", "label": "Pack 2 badge", "default": "Popular" },
+
+    { "type": "text", "id": "label_3", "label": "Pack 3 label", "default": "Pack of 3" },
+    { "type": "range", "id": "qty_3", "label": "Pack 3 quantity", "min": 1, "max": 10, "step": 1, "default": 3 },
+    { "type": "range", "id": "off_3", "label": "Pack 3 discount", "min": 0, "max": 60, "step": 5, "default": 15 },
+    { "type": "text", "id": "badge_3", "label": "Pack 3 badge", "default": "Best value" },
+
+    { "type": "text", "id": "label_4", "label": "Pack 4 label", "default": "Pack of 4" },
+    { "type": "range", "id": "qty_4", "label": "Pack 4 quantity", "min": 1, "max": 10, "step": 1, "default": 4 },
+    { "type": "range", "id": "off_4", "label": "Pack 4 discount", "min": 0, "max": 60, "step": 5, "default": 20 },
+    { "type": "text", "id": "badge_4", "label": "Pack 4 badge" },
+
+    { "type": "color", "id": "bg", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#fbfaf7" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#161616" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#e8e2d8" },
+    { "type": "color", "id": "accent", "label": "Accent", "default": "#111111" },
+    { "type": "color", "id": "button_bg", "label": "Button background", "default": "#111111" },
+    { "type": "color", "id": "button_text_color", "label": "Button text", "default": "#ffffff" },
+
+    { "type": "range", "id": "selected", "label": "Default selected pack", "min": 1, "max": 4, "step": 1, "default": 2 },
+    { "type": "range", "id": "heading_size", "label": "Heading size", "min": 22, "max": 42, "step": 1, "default": 30 },
+    { "type": "range", "id": "radius", "label": "Radius", "min": 6, "max": 28, "step": 1, "default": 16 },
+    { "type": "range", "id": "pad_y", "label": "Desktop padding", "min": 20, "max": 90, "step": 2, "default": 42 },
+    { "type": "range", "id": "mobile_pad_y", "label": "Mobile padding", "min": 18, "max": 70, "step": 2, "default": 30 },
+    { "type": "range", "id": "width", "label": "Width", "min": 520, "max": 1100, "step": 20, "default": 760 }
+  ]
+}
+{% endschema %}
