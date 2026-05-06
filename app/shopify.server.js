@@ -8,10 +8,10 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import prisma from "./db.server";
 
 const shopify = shopifyApp({
-  apiKey: process.env.SHOPIFY_API_KEY,
+  apiKey: process.env.SHOPIFY_API_KEY || "",
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: ApiVersion.October25,
-  scopes: process.env.SCOPES?.split(","),
+  scopes: process.env.SCOPES?.split(",") || [],
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
@@ -33,10 +33,6 @@ export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
 
-/**
- * Temporary helper so any route importing this does not fail during build.
- * You can replace this later with actual billing validation logic.
- */
 export async function hasActiveOneTimePurchaseForSection({
   admin,
   sectionHandle,
