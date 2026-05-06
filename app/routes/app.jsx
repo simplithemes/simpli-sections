@@ -80,7 +80,6 @@ export const loader = async ({ request }) => {
 export default function App() {
   const { apiKey, unlocked, hasUnlimitedPlan } = useLoaderData();
   const location = useLocation();
-
   const qs = location.search || "";
 
   return (
