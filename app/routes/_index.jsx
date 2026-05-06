@@ -1,8 +1,7 @@
-import { redirect } from "react-router";
+import { login } from "../shopify.server";
 
 export const loader = async ({ request }) => {
-  const url = new URL(request.url);
-  return redirect(`/app${url.search}`);
+  return login(request);
 };
 
 export default function Index() {
