@@ -34,7 +34,7 @@ export default function AppHome() {
     if (isUnlocked) return "Add to theme";
     if (section.price === 0) return "Add free";
 
-    return `Unlock $${section.price}`;
+    return "Upgrade to unlock";
   };
 
   const getSectionUrl = (section) => {
@@ -672,7 +672,7 @@ export default function AppHome() {
                               letterSpacing: "0.05em",
                             }}
                           >
-                            Price
+                            Access
                           </div>
 
                           <div
@@ -683,7 +683,7 @@ export default function AppHome() {
                               lineHeight: 1,
                             }}
                           >
-                            {isFree ? "Free" : `$${section.price}`}
+                            {isFree ? "Free" : "Unlimited"}
                           </div>
                         </div>
 
@@ -804,7 +804,7 @@ export default function AppHome() {
             >
               <div>✓ Unlock all paid features</div>
               <div>✓ Future releases included</div>
-              <div>✓ Best value after 3 features</div>
+              <div>✓ One plan for every premium feature</div>
             </div>
 
             {hasUnlimitedPlan ? (

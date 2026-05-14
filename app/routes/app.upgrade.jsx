@@ -164,7 +164,7 @@ export default function UpgradePage() {
               lineHeight: 1.7,
             }}
           >
-            We could not start the unlimited plan approval right now. Please try
+            We could not start the subscription approval right now. Please try
             again in a moment.
           </p>
 
@@ -272,7 +272,7 @@ export default function UpgradePage() {
           }}
         >
           Please approve the <strong>Unlimited Access</strong> subscription to
-          unlock all current and future premium sections.
+          unlock all premium features.
         </p>
 
         <a

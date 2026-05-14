@@ -32,17 +32,3 @@ export const unauthenticated = shopify.unauthenticated;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
 export const sessionStorage = shopify.sessionStorage;
-
-export async function hasActiveOneTimePurchaseForSection({
-  admin,
-  sectionHandle,
-}) {
-  try {
-    void admin;
-    void sectionHandle;
-    return true;
-  } catch (error) {
-    console.error("hasActiveOneTimePurchaseForSection error:", error);
-    return false;
-  }
-}

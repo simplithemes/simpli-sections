@@ -6,11 +6,6 @@ import { SECTION_CATALOG } from "../data/sections";
 const META_NAMESPACE = "simpli_sections";
 const META_KEY = "unlocked_sections";
 
-const PURCHASE_NAME_TO_HANDLE = SECTION_CATALOG.reduce((acc, section) => {
-  acc[`Simpli Sections — ${section.title}`] = section.handle;
-  return acc;
-}, {});
-
 const FILTERS = [
   { label: "All", value: "all" },
   { label: "Free", value: "free" },
@@ -40,16 +35,6 @@ async function getShopAndUnlocked(admin) {
           status
           test
         }
-        oneTimePurchases(first: 50, sortKey: CREATED_AT, reverse: true) {
-          edges {
-            node {
-              id
-              name
-              status
-              createdAt
-            }
-          }
-        }
       }
     }
   `;
@@ -65,18 +50,12 @@ async function getShopAndUnlocked(admin) {
     .map((s) => s.trim())
     .filter(Boolean);
 
-  const purchases =
-    json?.data?.currentAppInstallation?.oneTimePurchases?.edges?.map(
-      (e) => e.node,
-    ) || [];
-
   const activeSubscriptions =
     json?.data?.currentAppInstallation?.activeSubscriptions || [];
 
   return {
     shopId: shop?.id,
     unlocked,
-    purchases,
     activeSubscriptions,
   };
 }
@@ -126,7 +105,7 @@ export async function loader({ request }) {
   const { admin } = await authenticate.admin(request);
   const url = new URL(request.url);
 
-  const { shopId, unlocked, purchases, activeSubscriptions } =
+  const { shopId, unlocked, activeSubscriptions } =
     await getShopAndUnlocked(admin);
 
   const hasUnlimitedPlan = activeSubscriptions.some(
@@ -143,17 +122,6 @@ export async function loader({ request }) {
 
   if (!hasUnlimitedPlan && nextUnlocked.includes("__all_access__")) {
     nextUnlocked = nextUnlocked.filter((item) => item !== "__all_access__");
-  }
-
-  for (const purchase of purchases) {
-    if (purchase?.status !== "ACTIVE") continue;
-
-    const name = purchase?.name || "";
-    const handle = PURCHASE_NAME_TO_HANDLE[name];
-
-    if (handle && !nextUnlocked.includes(handle)) {
-      nextUnlocked.push(handle);
-    }
   }
 
   nextUnlocked = [...new Set(nextUnlocked)].sort();
@@ -199,7 +167,7 @@ function getSectionButtonLabel({ section, isUnlocked }) {
   if (section.status !== "live") return "Coming soon";
   if (isUnlocked) return "Add to theme";
   if (isSectionFree(section)) return "Add free section";
-  return `Unlock now · $${getSectionPrice(section)}`;
+  return "Upgrade to unlock";
 }
 
 function getSectionHref({ section, location }) {
@@ -212,7 +180,7 @@ function getSectionHref({ section, location }) {
 function getBuyHref({ section, location }) {
   const params = new URLSearchParams(location.search);
   params.set("section", section.handle);
-  return `/app/buy?${params.toString()}`;
+  return `/app/upgrade?${params.toString()}`;
 }
 
 function AlertBanner({ status, section }) {
@@ -243,8 +211,8 @@ function AlertBanner({ status, section }) {
     >
       <div>
         {isSuccess
-          ? `Purchase successful${section ? ` for ${section}` : ""}. Your section is now unlocked.`
-          : "Purchase was cancelled. You can unlock the section anytime."}
+          ? `Subscription active${section ? ` for ${section}` : ""}. Premium features are now unlocked.`
+          : "Subscription approval was cancelled. You can activate Unlimited Access anytime."}
       </div>
     </div>
   );
@@ -260,7 +228,6 @@ function SectionCard({
 }) {
   const isLive = section.status === "live";
   const isFree = isSectionFree(section);
-  const price = getSectionPrice(section);
   const isHovered = hoveredSection === section.handle;
   const sectionHref = getSectionHref({ section, location });
   const buyHref = getBuyHref({ section, location });
@@ -567,7 +534,7 @@ function SectionCard({
                 letterSpacing: "0.05em",
               }}
             >
-              Price
+              Access
             </div>
 
             <div
@@ -579,7 +546,7 @@ function SectionCard({
                 color: "#111827",
               }}
             >
-              {isFree ? "Free" : `$${price}`}
+              {isFree ? "Free" : "Unlimited"}
             </div>
           </div>
 
@@ -740,9 +707,8 @@ function UnlimitedPlanCard({ hasUnlimitedPlan, location }) {
             fontWeight: 700,
           }}
         >
-          <div>✓ Unlock all paid sections</div>
+          <div>✓ Unlock all premium sections</div>
           <div>✓ Future releases included</div>
-          <div>✓ Best value after 3 sections</div>
           <div>✓ No coding required</div>
         </div>
 
@@ -794,7 +760,7 @@ function UnlimitedPlanCard({ hasUnlimitedPlan, location }) {
               lineHeight: 1.45,
             }}
           >
-            Best value if you need more than two premium sections.
+            Unlock every premium section in one plan.
           </div>
         )}
       </div>
@@ -840,7 +806,7 @@ function UnlimitedPlanCard({ hasUnlimitedPlan, location }) {
             fontWeight: 900,
           }}
         >
-          Open Open My Sections →
+          Open My Sections →
         </a>
       </div>
     </div>
@@ -873,8 +839,8 @@ function HowItWorksCard() {
             text: "Pick a conversion-focused section from the library.",
           },
           {
-            title: "Unlock",
-            text: "Buy one section or activate Unlimited Access.",
+            title: "Activate Unlimited",
+            text: "Unlock premium sections with one Unlimited Access plan.",
           },
           {
             title: "Open editor",
@@ -1132,9 +1098,9 @@ export default function BillingPage() {
                 fontWeight: 600,
               }}
             >
-              Buy individual premium sections or unlock the full library with
-              Unlimited Access. Sections are built for offers, trust, bundles,
-              cart upgrades, product pages, and conversion-focused layouts.
+              Unlock premium Shopify sections with Unlimited Access. Sections
+              are built for offers, trust, bundles, cart upgrades, product
+              pages, and conversion-focused layouts.
             </p>
 
             <div
@@ -1325,11 +1291,10 @@ export default function BillingPage() {
                     fontWeight: 600,
                   }}
                 >
-                  Preview each section, unlock what you need, or get everything
-                  with Unlimited.
+                  Preview each section and explore premium features included in
+                  Unlimited Access.
                 </p>
               </div>
-
             </div>
 
             {filteredSections.length ? (

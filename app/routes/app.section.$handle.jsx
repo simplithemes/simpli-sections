@@ -188,7 +188,7 @@ export default function SectionDetailPage() {
   const primaryHref = isUnlocked
     ? themeEditorHref
     : isLive
-      ? `/app/buy?${buyParams.toString()}`
+      ? `/app/upgrade${qs}`
       : "#";
 
   const primaryLabel = !isLive
@@ -197,7 +197,7 @@ export default function SectionDetailPage() {
       ? "Add to theme editor"
       : isFree
         ? "Add free feature"
-        : `Unlock this feature for $${section.price}`;
+        : "Upgrade to unlock";
 
   return (
     <div
@@ -221,8 +221,8 @@ export default function SectionDetailPage() {
           }
 
           .simpli-detail-preview {
-  max-height: 430px;
-}
+            max-height: 430px;
+          }
 
           @media (max-width: 980px) {
             .simpli-detail-layout {
@@ -275,18 +275,18 @@ export default function SectionDetailPage() {
             }}
           >
             {sectionImage ? (
-  <img
-  className="simpli-detail-preview"
-  src={sectionImage}
-  alt={section.title}
-  style={{
-    width: "100%",
-    height: "auto",
-    maxHeight: 430,
-    objectFit: "contain",
-    display: "block",
-  }}
-/>
+              <img
+                className="simpli-detail-preview"
+                src={sectionImage}
+                alt={section.title}
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: 430,
+                  objectFit: "contain",
+                  display: "block",
+                }}
+              />
             ) : (
               <div
                 className="simpli-detail-preview"
@@ -760,7 +760,7 @@ export default function SectionDetailPage() {
                 lineHeight: 1,
               }}
             >
-              {isFree ? "Free" : `$${section.price}`}
+              {isFree ? "Free" : "Unlimited"}
             </span>
 
             {!isFree && (
@@ -772,7 +772,7 @@ export default function SectionDetailPage() {
                   fontWeight: 400,
                 }}
               >
-                one-time
+                access
               </span>
             )}
           </div>
@@ -832,7 +832,7 @@ export default function SectionDetailPage() {
                 background: "#ffffff",
               }}
             >
-              Or get Unlimited for $19/month
+              View Unlimited Access
             </a>
           )}
         </div>
