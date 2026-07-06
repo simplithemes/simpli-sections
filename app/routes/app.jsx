@@ -85,7 +85,7 @@ export default function App() {
   return (
     <AppProvider embedded apiKey={apiKey}>
       <s-app-nav>
-        <s-link href={`/app/billing${qs}`}>Browse Sections</s-link>
+        <s-link href={`/app${qs}`}>Website Builder</s-link>
         <s-link href={`/app/additional${qs}`}>My Sections</s-link>
       </s-app-nav>
 
