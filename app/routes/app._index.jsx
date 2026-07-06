@@ -15,6 +15,9 @@ const toneStyles = {
   violet: ["#3b0764", "#7c3aed", "#ede9fe"],
 };
 
+const appFont =
+  '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
 const businessLabelByValue = Object.fromEntries(
   BUSINESS_CATEGORIES.map((item) => [item.value, item.label]),
 );
@@ -289,6 +292,7 @@ function PreviewModal({ section, onClose, isUnlocked, installHref, upgradeHref }
         alignItems: "center",
         justifyContent: "center",
         padding: 18,
+        fontFamily: appFont,
       }}
       onClick={onClose}
     >
@@ -300,6 +304,8 @@ function PreviewModal({ section, onClose, isUnlocked, installHref, upgradeHref }
           background: "#ffffff",
           borderRadius: 22,
           boxShadow: "0 28px 80px rgba(15,23,42,0.28)",
+          color: "#111827",
+          fontFamily: appFont,
         }}
         onClick={(event) => event.stopPropagation()}
       >
@@ -308,7 +314,7 @@ function PreviewModal({ section, onClose, isUnlocked, installHref, upgradeHref }
             <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 800 }}>
               {section.sectionTypeLabel} / {section.designName}
             </div>
-            <h2 style={{ margin: "4px 0 0", fontSize: 24, lineHeight: 1.15 }}>{section.title}</h2>
+            <h2 style={{ margin: "4px 0 0", fontSize: 24, lineHeight: 1.15, letterSpacing: "-0.02em" }}>{section.title}</h2>
           </div>
           <button
             type="button"
@@ -343,7 +349,7 @@ function PreviewModal({ section, onClose, isUnlocked, installHref, upgradeHref }
 
             <div style={{ padding: 15, borderRadius: 16, background: "#f9fafb", border: "1px solid rgba(15,23,42,0.08)" }}>
               <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 800, marginBottom: 6 }}>Access</div>
-              <div style={{ fontSize: 24, fontWeight: 900 }}>{getIsFree(section) ? "Free" : "Unlimited Access"}</div>
+              <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em" }}>{getIsFree(section) ? "Free" : "Unlimited Access"}</div>
               <p style={{ margin: "8px 0 0", color: "#6b7280", fontSize: 13, lineHeight: 1.5 }}>
                 {isUnlocked
                   ? "This section is available for your store. Install it into the Shopify theme editor and customize it there."
@@ -399,7 +405,7 @@ function InfoBlock({ title, text }) {
   return (
     <div style={{ padding: 16, borderRadius: 16, background: "#ffffff", border: "1px solid rgba(15,23,42,0.08)" }}>
       <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 800, marginBottom: 6 }}>{title}</div>
-      <div style={{ fontSize: 14, lineHeight: 1.65, color: "#374151" }}>{text}</div>
+      <div style={{ fontSize: 14, lineHeight: 1.65, color: "#374151", fontWeight: 500 }}>{text}</div>
     </div>
   );
 }
@@ -423,36 +429,60 @@ function PackCard({ pack, sectionsByHandle }) {
   return (
     <div
       style={{
-        minWidth: 300,
+        minWidth: 336,
         borderRadius: 18,
         background: "#ffffff",
         border: "1px solid rgba(15,23,42,0.08)",
-        padding: 16,
+        padding: 12,
         boxShadow: "0 10px 28px rgba(15,23,42,0.05)",
       }}
     >
-      <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 850, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-        Homepage pack
+      <div
+        style={{
+          aspectRatio: "16 / 10",
+          borderRadius: 14,
+          overflow: "hidden",
+          background: "#f3f4f6",
+          border: "1px solid rgba(15,23,42,0.08)",
+          marginBottom: 13,
+        }}
+      >
+        <img
+          src={pack.image}
+          alt={`${pack.title} preview`}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
       </div>
-      <h3 style={{ margin: "6px 0 0", fontSize: 18, lineHeight: 1.2 }}>{pack.title}</h3>
-      <p style={{ margin: "8px 0 12px", color: "#4b5563", fontSize: 13, lineHeight: 1.55 }}>{pack.description}</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-        {pack.bestFor.map((tag) => (
-          <span key={tag} style={{ padding: "5px 7px", borderRadius: 999, background: "#eef2ff", color: "#3730a3", fontSize: 10, fontWeight: 800 }}>
-            {tag}
-          </span>
-        ))}
-      </div>
-      <div style={{ display: "grid", gap: 6 }}>
-        {pack.sections.slice(0, 8).map((handle) => {
-          const section = sectionsByHandle.get(handle);
-          return (
-            <div key={handle} style={{ display: "flex", justifyContent: "space-between", gap: 8, color: "#374151", fontSize: 12 }}>
-              <span>{section?.sectionTypeLabel || "Section"}</span>
-              <strong style={{ color: "#111827" }}>{section?.title || handle}</strong>
-            </div>
-          );
-        })}
+
+      <div style={{ padding: "0 4px 4px" }}>
+        <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 850, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          Homepage pack
+        </div>
+        <h3 style={{ margin: "6px 0 0", fontSize: 18, lineHeight: 1.2 }}>{pack.title}</h3>
+        <p style={{ margin: "8px 0 12px", color: "#4b5563", fontSize: 13, lineHeight: 1.55 }}>{pack.description}</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+          {pack.bestFor.map((tag) => (
+            <span key={tag} style={{ padding: "5px 7px", borderRadius: 999, background: "#eef2ff", color: "#3730a3", fontSize: 10, fontWeight: 800 }}>
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div style={{ display: "grid", gap: 6 }}>
+          {pack.sections.slice(0, 8).map((handle) => {
+            const section = sectionsByHandle.get(handle);
+            return (
+              <div key={handle} style={{ display: "flex", justifyContent: "space-between", gap: 8, color: "#374151", fontSize: 12 }}>
+                <span>{section?.sectionTypeLabel || "Section"}</span>
+                <strong style={{ color: "#111827" }}>{section?.title || handle}</strong>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -526,6 +556,11 @@ export default function AppHome() {
             padding: 18px 20px 44px;
             font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color: #111827;
+          }
+          .simpli-builder-shell button,
+          .simpli-builder-shell input,
+          .simpli-builder-shell a {
+            font-family: ${appFont};
           }
           .simpli-builder-layout {
             display: grid;
