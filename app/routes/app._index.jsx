@@ -40,9 +40,8 @@ function buildThemeEditorUrl({ shop, apiKey, blockHandle, template = "index" }) 
   return `/admin/themes/current/editor?${params.toString()}`;
 }
 
-function PreviewArtwork({ section, compact = false }) {
+function PreviewShell({ section, compact, children }) {
   const [dark, mid, light] = toneStyles[section.previewTone] || toneStyles.slate;
-  const chips = section.sectionType === "homepage-hero" ? 1 : 3;
 
   return (
     <div
@@ -53,72 +52,308 @@ function PreviewArtwork({ section, compact = false }) {
         overflow: "hidden",
         background: `linear-gradient(135deg, ${dark} 0%, ${mid} 58%, ${light} 100%)`,
         border: "1px solid rgba(15,23,42,0.08)",
+        boxShadow: compact ? "none" : "inset 0 0 0 1px rgba(255,255,255,0.12)",
       }}
     >
       <div
         style={{
           position: "absolute",
-          inset: compact ? 12 : 22,
+          inset: compact ? 10 : 18,
           display: "grid",
-          gridTemplateColumns: section.sectionType === "homepage-hero" ? "1.1fr .9fr" : "1fr",
-          gap: compact ? 8 : 18,
-          alignItems: "center",
         }}
       >
-        <div>
-          <div
-            style={{
-              width: compact ? 74 : 138,
-              height: compact ? 8 : 12,
-              borderRadius: 999,
-              background: "rgba(255,255,255,0.72)",
-              marginBottom: compact ? 8 : 16,
-            }}
-          />
-          <div
-            style={{
-              width: compact ? "78%" : "70%",
-              height: compact ? 16 : 34,
-              borderRadius: 8,
-              background: "#ffffff",
-              marginBottom: compact ? 7 : 12,
-            }}
-          />
-          <div
-            style={{
-              width: compact ? "58%" : "48%",
-              height: compact ? 9 : 14,
-              borderRadius: 999,
-              background: "rgba(255,255,255,0.72)",
-            }}
-          />
-        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              section.sectionType === "featured-collection" || section.sectionType === "category-grid"
-                ? "repeat(3, 1fr)"
-                : "1fr",
-            gap: compact ? 6 : 10,
-          }}
-        >
-          {Array.from({ length: chips }).map((_, index) => (
-            <div
-              key={index}
-              style={{
-                aspectRatio: section.sectionType === "offer-banner" ? "4 / 1" : "1 / 1",
-                minHeight: compact ? 34 : 72,
-                borderRadius: compact ? 10 : 16,
-                background: "rgba(255,255,255,0.88)",
-                boxShadow: "0 18px 34px rgba(15,23,42,0.16)",
-              }}
-            />
+function MiniText({ width = "70%", height = 10, light = false }) {
+  return (
+    <div
+      style={{
+        width,
+        height,
+        borderRadius: 999,
+        background: light ? "rgba(255,255,255,0.72)" : "rgba(15,23,42,0.16)",
+      }}
+    />
+  );
+}
+
+function ProductCard({ compact }) {
+  return (
+    <div
+      style={{
+        borderRadius: compact ? 9 : 14,
+        background: "rgba(255,255,255,0.92)",
+        padding: compact ? 6 : 10,
+        display: "grid",
+        gap: compact ? 5 : 8,
+        boxShadow: "0 16px 34px rgba(15,23,42,0.12)",
+      }}
+    >
+      <div
+        style={{
+          aspectRatio: "1 / 1",
+          borderRadius: compact ? 7 : 11,
+          background: "linear-gradient(135deg, #e5e7eb, #f8fafc)",
+        }}
+      />
+      <MiniText width="82%" height={compact ? 5 : 8} />
+      <MiniText width="48%" height={compact ? 5 : 8} />
+    </div>
+  );
+}
+
+function HeaderPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gap: compact ? 8 : 14, alignContent: "start" }}>
+      <div
+        style={{
+          height: compact ? 30 : 52,
+          borderRadius: 999,
+          background: "rgba(255,255,255,0.94)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: compact ? "0 10px" : "0 20px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: compact ? 6 : 10 }}>
+          <div style={{ width: compact ? 18 : 28, height: compact ? 18 : 28, borderRadius: 999, background: "#111827" }} />
+          <MiniText width={compact ? 56 : 96} height={compact ? 6 : 10} />
+        </div>
+        <div style={{ display: "flex", gap: compact ? 6 : 12 }}>
+          {[0, 1, 2].map((item) => (
+            <MiniText key={item} width={compact ? 22 : 54} height={compact ? 5 : 8} />
           ))}
         </div>
       </div>
+      <div
+        style={{
+          height: compact ? 36 : 64,
+          borderRadius: compact ? 12 : 18,
+          background: "rgba(255,255,255,0.18)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#ffffff",
+          fontSize: compact ? 10 : 13,
+          fontWeight: 900,
+          letterSpacing: "0.02em",
+        }}
+      >
+        Free shipping banner / launch offer
+      </div>
     </div>
+  );
+}
+
+function HeroPreview({ compact }) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "1.05fr .95fr",
+        gap: compact ? 8 : 18,
+        alignItems: "center",
+      }}
+    >
+      <div style={{ display: "grid", gap: compact ? 7 : 13 }}>
+        <MiniText width="38%" height={compact ? 6 : 10} light />
+        <div style={{ width: "90%", height: compact ? 28 : 58, borderRadius: compact ? 10 : 16, background: "#ffffff" }} />
+        <MiniText width="72%" height={compact ? 6 : 10} light />
+        <div style={{ width: compact ? 84 : 138, height: compact ? 22 : 38, borderRadius: 999, background: "#ffffff" }} />
+      </div>
+      <div
+        style={{
+          minHeight: compact ? 78 : 210,
+          borderRadius: compact ? 14 : 24,
+          background: "rgba(255,255,255,0.9)",
+          display: "grid",
+          placeItems: "center",
+          boxShadow: "0 20px 46px rgba(15,23,42,0.18)",
+        }}
+      >
+        <div style={{ width: compact ? 54 : 124, height: compact ? 54 : 124, borderRadius: "36% 64% 48% 52%", background: "linear-gradient(135deg, #d1d5db, #ffffff)" }} />
+      </div>
+    </div>
+  );
+}
+
+function CollectionPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gap: compact ? 8 : 14, alignContent: "center" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <MiniText width={compact ? 92 : 160} height={compact ? 8 : 12} light />
+        <MiniText width={compact ? 52 : 78} height={compact ? 6 : 9} light />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 6 : 12 }}>
+        {[0, 1, 2].map((item) => (
+          <ProductCard key={item} compact={compact} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProductShowcasePreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: compact ? 8 : 16, alignItems: "center" }}>
+      <div style={{ borderRadius: compact ? 13 : 22, background: "rgba(255,255,255,0.9)", minHeight: compact ? 84 : 220, display: "grid", placeItems: "center" }}>
+        <div style={{ width: compact ? 54 : 126, height: compact ? 54 : 126, borderRadius: 18, background: "linear-gradient(135deg, #e5e7eb, #ffffff)" }} />
+      </div>
+      <div style={{ display: "grid", gap: compact ? 6 : 11 }}>
+        <MiniText width="44%" height={compact ? 6 : 10} light />
+        <div style={{ width: "90%", height: compact ? 22 : 44, borderRadius: 12, background: "#ffffff" }} />
+        {[0, 1, 2].map((item) => (
+          <div key={item} style={{ height: compact ? 14 : 28, borderRadius: 999, background: "rgba(255,255,255,0.72)" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TrustPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: compact ? 7 : 12, alignContent: "center" }}>
+      {[0, 1, 2, 3].map((item) => (
+        <div key={item} style={{ borderRadius: compact ? 10 : 16, background: "rgba(255,255,255,0.92)", padding: compact ? 7 : 13, display: "flex", gap: compact ? 6 : 10, alignItems: "center" }}>
+          <div style={{ width: compact ? 18 : 34, height: compact ? 18 : 34, borderRadius: 999, background: "rgba(15,23,42,0.14)" }} />
+          <div style={{ display: "grid", gap: compact ? 4 : 6, flex: 1 }}>
+            <MiniText width="78%" height={compact ? 5 : 8} />
+            <MiniText width="54%" height={compact ? 5 : 8} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TestimonialsPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 6 : 12, alignContent: "center" }}>
+      {[0, 1, 2].map((item) => (
+        <div key={item} style={{ borderRadius: compact ? 10 : 16, background: "rgba(255,255,255,0.92)", padding: compact ? 7 : 14, display: "grid", gap: compact ? 6 : 10 }}>
+          <MiniText width="64%" height={compact ? 5 : 8} />
+          <MiniText width="92%" height={compact ? 5 : 8} />
+          <MiniText width="78%" height={compact ? 5 : 8} />
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: compact ? 18 : 30, height: compact ? 18 : 30, borderRadius: 999, background: "rgba(15,23,42,0.14)" }} />
+            <MiniText width="44%" height={compact ? 5 : 8} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CategoryGridPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: compact ? 6 : 12, alignContent: "center" }}>
+      {[0, 1, 2, 3].map((item) => (
+        <div key={item} style={{ borderRadius: compact ? 11 : 18, background: "rgba(255,255,255,0.9)", minHeight: compact ? 82 : 204, padding: compact ? 7 : 12, display: "grid", alignContent: "end" }}>
+          <MiniText width="82%" height={compact ? 5 : 9} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function OfferPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", placeItems: "center" }}>
+      <div style={{ width: "100%", borderRadius: compact ? 14 : 24, background: "rgba(255,255,255,0.94)", padding: compact ? 14 : 28, display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center" }}>
+        <div style={{ display: "grid", gap: compact ? 7 : 12 }}>
+          <MiniText width="34%" height={compact ? 6 : 10} />
+          <MiniText width="86%" height={compact ? 14 : 28} />
+          <MiniText width="58%" height={compact ? 6 : 10} />
+        </div>
+        <div style={{ width: compact ? 66 : 118, height: compact ? 28 : 44, borderRadius: 999, background: "#111827" }} />
+      </div>
+    </div>
+  );
+}
+
+function VideoPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 7 : 14, alignContent: "center" }}>
+      {[0, 1, 2].map((item) => (
+        <div key={item} style={{ aspectRatio: "9 / 15", borderRadius: compact ? 12 : 20, background: "rgba(255,255,255,0.88)", display: "grid", placeItems: "center" }}>
+          <div style={{ width: 0, height: 0, borderTop: compact ? "8px solid transparent" : "14px solid transparent", borderBottom: compact ? "8px solid transparent" : "14px solid transparent", borderLeft: compact ? "13px solid #111827" : "22px solid #111827" }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BrandStoryPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: ".85fr 1.15fr", gap: compact ? 8 : 18, alignItems: "center" }}>
+      <div style={{ borderRadius: compact ? 14 : 24, background: "rgba(255,255,255,0.9)", minHeight: compact ? 90 : 220 }} />
+      <div style={{ display: "grid", gap: compact ? 7 : 13 }}>
+        <MiniText width="34%" height={compact ? 6 : 10} light />
+        <div style={{ height: compact ? 30 : 60, borderRadius: 12, background: "#ffffff" }} />
+        <MiniText width="92%" height={compact ? 6 : 10} light />
+        <MiniText width="76%" height={compact ? 6 : 10} light />
+      </div>
+    </div>
+  );
+}
+
+function FaqPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", gap: compact ? 7 : 12, alignContent: "center" }}>
+      <MiniText width={compact ? 120 : 220} height={compact ? 8 : 14} light />
+      {[0, 1, 2, 3].map((item) => (
+        <div key={item} style={{ height: compact ? 20 : 42, borderRadius: compact ? 10 : 14, background: "rgba(255,255,255,0.92)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: compact ? "0 9px" : "0 16px" }}>
+          <MiniText width={compact ? 80 : 180} height={compact ? 5 : 8} />
+          <MiniText width={compact ? 12 : 18} height={compact ? 5 : 8} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FooterPreview({ compact }) {
+  return (
+    <div style={{ display: "grid", alignContent: "end", gap: compact ? 8 : 14 }}>
+      <div style={{ borderRadius: compact ? 12 : 20, background: "rgba(255,255,255,0.94)", padding: compact ? 10 : 20, display: "grid", gridTemplateColumns: "1.2fr repeat(3, .8fr)", gap: compact ? 8 : 16 }}>
+        {[0, 1, 2, 3].map((item) => (
+          <div key={item} style={{ display: "grid", gap: compact ? 5 : 8 }}>
+            <MiniText width="74%" height={compact ? 5 : 8} />
+            <MiniText width="62%" height={compact ? 5 : 8} />
+            <MiniText width="48%" height={compact ? 5 : 8} />
+          </div>
+        ))}
+      </div>
+      <div style={{ height: compact ? 16 : 28, borderRadius: 999, background: "rgba(255,255,255,0.22)" }} />
+    </div>
+  );
+}
+
+function PreviewArtwork({ section, compact = false }) {
+  const previewByType = {
+    header: HeaderPreview,
+    "homepage-hero": HeroPreview,
+    "featured-collection": CollectionPreview,
+    "product-showcase": ProductShowcasePreview,
+    "trust-badges": TrustPreview,
+    testimonials: TestimonialsPreview,
+    "category-grid": CategoryGridPreview,
+    "offer-banner": OfferPreview,
+    "video-reels": VideoPreview,
+    "brand-story": BrandStoryPreview,
+    faq: FaqPreview,
+    footer: FooterPreview,
+  };
+  const SpecificPreview = previewByType[section.sectionType] || HeroPreview;
+
+  return (
+    <PreviewShell section={section} compact={compact}>
+      <SpecificPreview compact={compact} />
+    </PreviewShell>
   );
 }
 
