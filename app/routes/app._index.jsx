@@ -81,7 +81,73 @@ function MiniText({ width = "70%", height = 10, light = false }) {
   );
 }
 
-function ProductCard({ compact }) {
+function PreviewLabel({ children, compact, muted = false, inverse = false }) {
+  return (
+    <div
+      style={{
+        color: inverse ? "#ffffff" : muted ? "#64748b" : "#111827",
+        fontSize: compact ? 8 : 12,
+        fontWeight: muted ? 700 : 900,
+        lineHeight: 1.15,
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function PreviewHeading({ children, compact, inverse = false }) {
+  return (
+    <div
+      style={{
+        color: inverse ? "#ffffff" : "#0f172a",
+        fontSize: compact ? 14 : 30,
+        fontWeight: 950,
+        lineHeight: 1.02,
+        letterSpacing: "-0.04em",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ProductVisual({ compact, tone = "neutral" }) {
+  const gradients = {
+    neutral: "linear-gradient(135deg, #e5e7eb, #ffffff)",
+    beauty: "linear-gradient(135deg, #fecdd3, #fff1f2)",
+    fashion: "linear-gradient(135deg, #cbd5e1, #f8fafc)",
+    fmcg: "linear-gradient(135deg, #bbf7d0, #fef3c7)",
+    luxury: "linear-gradient(135deg, #fef3c7, #f5d0fe)",
+  };
+
+  return (
+    <div
+      style={{
+        aspectRatio: "1 / 1",
+        borderRadius: compact ? 8 : 14,
+        background: gradients[tone] || gradients.neutral,
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
+      <div
+        style={{
+          width: compact ? 24 : 54,
+          height: compact ? 34 : 74,
+          borderRadius: compact ? 8 : 18,
+          background: "rgba(255,255,255,0.72)",
+          boxShadow: "inset 0 0 0 1px rgba(15,23,42,0.08)",
+        }}
+      />
+    </div>
+  );
+}
+
+function ProductCard({ compact, name = "Glow Serum", price = "$24", badge = "Bestseller" }) {
   return (
     <div
       style={{
@@ -93,15 +159,24 @@ function ProductCard({ compact }) {
         boxShadow: "0 16px 34px rgba(15,23,42,0.12)",
       }}
     >
-      <div
-        style={{
-          aspectRatio: "1 / 1",
-          borderRadius: compact ? 7 : 11,
-          background: "linear-gradient(135deg, #e5e7eb, #f8fafc)",
-        }}
-      />
-      <MiniText width="82%" height={compact ? 5 : 8} />
-      <MiniText width="48%" height={compact ? 5 : 8} />
+      <ProductVisual compact={compact} tone={name.includes("Serum") ? "beauty" : name.includes("Kurta") ? "fashion" : "fmcg"} />
+      <PreviewLabel compact={compact}>{name}</PreviewLabel>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 6, alignItems: "center" }}>
+        <PreviewLabel compact={compact} muted>{price}</PreviewLabel>
+        <span
+          style={{
+            display: compact ? "none" : "inline-flex",
+            padding: "4px 6px",
+            borderRadius: 999,
+            background: "#dcfce7",
+            color: "#166534",
+            fontSize: 9,
+            fontWeight: 900,
+          }}
+        >
+          {badge}
+        </span>
+      </div>
     </div>
   );
 }
@@ -121,12 +196,12 @@ function HeaderPreview({ compact }) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: compact ? 6 : 10 }}>
-          <div style={{ width: compact ? 18 : 28, height: compact ? 18 : 28, borderRadius: 999, background: "#111827" }} />
-          <MiniText width={compact ? 56 : 96} height={compact ? 6 : 10} />
+          <div style={{ width: compact ? 18 : 30, height: compact ? 18 : 30, borderRadius: 999, background: "#111827", color: "#ffffff", display: "grid", placeItems: "center", fontSize: compact ? 9 : 13, fontWeight: 950 }}>S</div>
+          <PreviewLabel compact={compact}>SILK & CO</PreviewLabel>
         </div>
         <div style={{ display: "flex", gap: compact ? 6 : 12 }}>
-          {[0, 1, 2].map((item) => (
-            <MiniText key={item} width={compact ? 22 : 54} height={compact ? 5 : 8} />
+          {["Shop", "New", "Sale"].map((item) => (
+            <PreviewLabel key={item} compact={compact} muted>{item}</PreviewLabel>
           ))}
         </div>
       </div>
@@ -144,7 +219,7 @@ function HeaderPreview({ compact }) {
           letterSpacing: "0.02em",
         }}
       >
-        Free shipping banner / launch offer
+        Free shipping over $49 - New drop live
       </div>
     </div>
   );
@@ -161,10 +236,14 @@ function HeroPreview({ compact }) {
       }}
     >
       <div style={{ display: "grid", gap: compact ? 7 : 13 }}>
-        <MiniText width="38%" height={compact ? 6 : 10} light />
-        <div style={{ width: "90%", height: compact ? 28 : 58, borderRadius: compact ? 10 : 16, background: "#ffffff" }} />
-        <MiniText width="72%" height={compact ? 6 : 10} light />
-        <div style={{ width: compact ? 84 : 138, height: compact ? 22 : 38, borderRadius: 999, background: "#ffffff" }} />
+        <PreviewLabel compact={compact} inverse>Premium launch</PreviewLabel>
+        <PreviewHeading compact={compact} inverse>
+          {compact ? "New season edit" : "Build a premium ritual"}
+        </PreviewHeading>
+        <PreviewLabel compact={compact} inverse>Clean products, fast checkout, stronger trust.</PreviewLabel>
+        <div style={{ width: compact ? 84 : 138, height: compact ? 22 : 38, borderRadius: 999, background: "#ffffff", display: "grid", placeItems: "center" }}>
+          <PreviewLabel compact={compact}>Shop now</PreviewLabel>
+        </div>
       </div>
       <div
         style={{
@@ -176,7 +255,7 @@ function HeroPreview({ compact }) {
           boxShadow: "0 20px 46px rgba(15,23,42,0.18)",
         }}
       >
-        <div style={{ width: compact ? 54 : 124, height: compact ? 54 : 124, borderRadius: "36% 64% 48% 52%", background: "linear-gradient(135deg, #d1d5db, #ffffff)" }} />
+        <ProductVisual compact={compact} tone="luxury" />
       </div>
     </div>
   );
@@ -186,13 +265,13 @@ function CollectionPreview({ compact }) {
   return (
     <div style={{ display: "grid", gap: compact ? 8 : 14, alignContent: "center" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <MiniText width={compact ? 92 : 160} height={compact ? 8 : 12} light />
-        <MiniText width={compact ? 52 : 78} height={compact ? 6 : 9} light />
+        <PreviewHeading compact={compact} inverse>Best sellers</PreviewHeading>
+        <PreviewLabel compact={compact} inverse>View all</PreviewLabel>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 6 : 12 }}>
-        {[0, 1, 2].map((item) => (
-          <ProductCard key={item} compact={compact} />
-        ))}
+        <ProductCard compact={compact} name="Glow Serum" price="$28" />
+        <ProductCard compact={compact} name="Cotton Kurta" price="$42" />
+        <ProductCard compact={compact} name="Daily Pack" price="$18" />
       </div>
     </div>
   );
@@ -202,13 +281,15 @@ function ProductShowcasePreview({ compact }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: compact ? 8 : 16, alignItems: "center" }}>
       <div style={{ borderRadius: compact ? 13 : 22, background: "rgba(255,255,255,0.9)", minHeight: compact ? 84 : 220, display: "grid", placeItems: "center" }}>
-        <div style={{ width: compact ? 54 : 126, height: compact ? 54 : 126, borderRadius: 18, background: "linear-gradient(135deg, #e5e7eb, #ffffff)" }} />
+        <ProductVisual compact={compact} tone="beauty" />
       </div>
       <div style={{ display: "grid", gap: compact ? 6 : 11 }}>
-        <MiniText width="44%" height={compact ? 6 : 10} light />
-        <div style={{ width: "90%", height: compact ? 22 : 44, borderRadius: 12, background: "#ffffff" }} />
-        {[0, 1, 2].map((item) => (
-          <div key={item} style={{ height: compact ? 14 : 28, borderRadius: 999, background: "rgba(255,255,255,0.72)" }} />
+        <PreviewLabel compact={compact} inverse>Complete routine</PreviewLabel>
+        <PreviewHeading compact={compact} inverse>Bundle & save 20%</PreviewHeading>
+        {["Cleanser", "Serum", "Moisturizer"].map((item) => (
+          <div key={item} style={{ height: compact ? 14 : 28, borderRadius: 999, background: "rgba(255,255,255,0.78)", display: "flex", alignItems: "center", padding: compact ? "0 7px" : "0 13px" }}>
+            <PreviewLabel compact={compact}>{item}</PreviewLabel>
+          </div>
         ))}
       </div>
     </div>
@@ -220,10 +301,12 @@ function TrustPreview({ compact }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: compact ? 7 : 12, alignContent: "center" }}>
       {[0, 1, 2, 3].map((item) => (
         <div key={item} style={{ borderRadius: compact ? 10 : 16, background: "rgba(255,255,255,0.92)", padding: compact ? 7 : 13, display: "flex", gap: compact ? 6 : 10, alignItems: "center" }}>
-          <div style={{ width: compact ? 18 : 34, height: compact ? 18 : 34, borderRadius: 999, background: "rgba(15,23,42,0.14)" }} />
+          <div style={{ width: compact ? 18 : 34, height: compact ? 18 : 34, borderRadius: 999, background: "rgba(15,23,42,0.14)", display: "grid", placeItems: "center", fontSize: compact ? 8 : 14 }}>
+            {["✓", "₹", "↺", "★"][item]}
+          </div>
           <div style={{ display: "grid", gap: compact ? 4 : 6, flex: 1 }}>
-            <MiniText width="78%" height={compact ? 5 : 8} />
-            <MiniText width="54%" height={compact ? 5 : 8} />
+            <PreviewLabel compact={compact}>{["Secure", "COD", "Returns", "Quality"][item]}</PreviewLabel>
+            <PreviewLabel compact={compact} muted>{["Payment", "Available", "Easy", "Checked"][item]}</PreviewLabel>
           </div>
         </div>
       ))}
@@ -236,12 +319,11 @@ function TestimonialsPreview({ compact }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 6 : 12, alignContent: "center" }}>
       {[0, 1, 2].map((item) => (
         <div key={item} style={{ borderRadius: compact ? 10 : 16, background: "rgba(255,255,255,0.92)", padding: compact ? 7 : 14, display: "grid", gap: compact ? 6 : 10 }}>
-          <MiniText width="64%" height={compact ? 5 : 8} />
-          <MiniText width="92%" height={compact ? 5 : 8} />
-          <MiniText width="78%" height={compact ? 5 : 8} />
+          <PreviewLabel compact={compact}>★★★★★</PreviewLabel>
+          <PreviewLabel compact={compact} muted>"Looks premium and converts."</PreviewLabel>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: compact ? 18 : 30, height: compact ? 18 : 30, borderRadius: 999, background: "rgba(15,23,42,0.14)" }} />
-            <MiniText width="44%" height={compact ? 5 : 8} />
+            <PreviewLabel compact={compact}>Aarav</PreviewLabel>
           </div>
         </div>
       ))}
@@ -254,7 +336,7 @@ function CategoryGridPreview({ compact }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: compact ? 6 : 12, alignContent: "center" }}>
       {[0, 1, 2, 3].map((item) => (
         <div key={item} style={{ borderRadius: compact ? 11 : 18, background: "rgba(255,255,255,0.9)", minHeight: compact ? 82 : 204, padding: compact ? 7 : 12, display: "grid", alignContent: "end" }}>
-          <MiniText width="82%" height={compact ? 5 : 9} />
+          <PreviewLabel compact={compact}>{["Skincare", "Apparel", "Kitchen", "Gifts"][item]}</PreviewLabel>
         </div>
       ))}
     </div>
@@ -266,11 +348,13 @@ function OfferPreview({ compact }) {
     <div style={{ display: "grid", placeItems: "center" }}>
       <div style={{ width: "100%", borderRadius: compact ? 14 : 24, background: "rgba(255,255,255,0.94)", padding: compact ? 14 : 28, display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center" }}>
         <div style={{ display: "grid", gap: compact ? 7 : 12 }}>
-          <MiniText width="34%" height={compact ? 6 : 10} />
-          <MiniText width="86%" height={compact ? 14 : 28} />
-          <MiniText width="58%" height={compact ? 6 : 10} />
+          <PreviewLabel compact={compact} muted>Limited offer</PreviewLabel>
+          <PreviewHeading compact={compact}>Buy 2 get 1 free</PreviewHeading>
+          <PreviewLabel compact={compact} muted>Auto-applied at checkout today.</PreviewLabel>
         </div>
-        <div style={{ width: compact ? 66 : 118, height: compact ? 28 : 44, borderRadius: 999, background: "#111827" }} />
+        <div style={{ width: compact ? 66 : 118, height: compact ? 28 : 44, borderRadius: 999, background: "#111827", display: "grid", placeItems: "center" }}>
+          <PreviewLabel compact={compact} inverse>Claim</PreviewLabel>
+        </div>
       </div>
     </div>
   );
@@ -281,7 +365,10 @@ function VideoPreview({ compact }) {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: compact ? 7 : 14, alignContent: "center" }}>
       {[0, 1, 2].map((item) => (
         <div key={item} style={{ aspectRatio: "9 / 15", borderRadius: compact ? 12 : 20, background: "rgba(255,255,255,0.88)", display: "grid", placeItems: "center" }}>
-          <div style={{ width: 0, height: 0, borderTop: compact ? "8px solid transparent" : "14px solid transparent", borderBottom: compact ? "8px solid transparent" : "14px solid transparent", borderLeft: compact ? "13px solid #111827" : "22px solid #111827" }} />
+          <div style={{ display: "grid", placeItems: "center", gap: compact ? 5 : 10 }}>
+            <div style={{ width: 0, height: 0, borderTop: compact ? "8px solid transparent" : "14px solid transparent", borderBottom: compact ? "8px solid transparent" : "14px solid transparent", borderLeft: compact ? "13px solid #111827" : "22px solid #111827" }} />
+            <PreviewLabel compact={compact} muted>UGC</PreviewLabel>
+          </div>
         </div>
       ))}
     </div>
@@ -293,10 +380,9 @@ function BrandStoryPreview({ compact }) {
     <div style={{ display: "grid", gridTemplateColumns: ".85fr 1.15fr", gap: compact ? 8 : 18, alignItems: "center" }}>
       <div style={{ borderRadius: compact ? 14 : 24, background: "rgba(255,255,255,0.9)", minHeight: compact ? 90 : 220 }} />
       <div style={{ display: "grid", gap: compact ? 7 : 13 }}>
-        <MiniText width="34%" height={compact ? 6 : 10} light />
-        <div style={{ height: compact ? 30 : 60, borderRadius: 12, background: "#ffffff" }} />
-        <MiniText width="92%" height={compact ? 6 : 10} light />
-        <MiniText width="76%" height={compact ? 6 : 10} light />
+        <PreviewLabel compact={compact} inverse>Our story</PreviewLabel>
+        <PreviewHeading compact={compact} inverse>Made with care</PreviewHeading>
+        <PreviewLabel compact={compact} inverse>Founder-led products, thoughtful sourcing, everyday rituals.</PreviewLabel>
       </div>
     </div>
   );
@@ -305,11 +391,11 @@ function BrandStoryPreview({ compact }) {
 function FaqPreview({ compact }) {
   return (
     <div style={{ display: "grid", gap: compact ? 7 : 12, alignContent: "center" }}>
-      <MiniText width={compact ? 120 : 220} height={compact ? 8 : 14} light />
-      {[0, 1, 2, 3].map((item) => (
+      <PreviewHeading compact={compact} inverse>Questions?</PreviewHeading>
+      {["Shipping timeline", "Return policy", "How to use it", "COD available"].map((item) => (
         <div key={item} style={{ height: compact ? 20 : 42, borderRadius: compact ? 10 : 14, background: "rgba(255,255,255,0.92)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: compact ? "0 9px" : "0 16px" }}>
-          <MiniText width={compact ? 80 : 180} height={compact ? 5 : 8} />
-          <MiniText width={compact ? 12 : 18} height={compact ? 5 : 8} />
+          <PreviewLabel compact={compact}>{item}</PreviewLabel>
+          <PreviewLabel compact={compact}>+</PreviewLabel>
         </div>
       ))}
     </div>
@@ -320,15 +406,17 @@ function FooterPreview({ compact }) {
   return (
     <div style={{ display: "grid", alignContent: "end", gap: compact ? 8 : 14 }}>
       <div style={{ borderRadius: compact ? 12 : 20, background: "rgba(255,255,255,0.94)", padding: compact ? 10 : 20, display: "grid", gridTemplateColumns: "1.2fr repeat(3, .8fr)", gap: compact ? 8 : 16 }}>
-        {[0, 1, 2, 3].map((item) => (
+        {["SIMPLI", "Shop", "Support", "Social"].map((item) => (
           <div key={item} style={{ display: "grid", gap: compact ? 5 : 8 }}>
-            <MiniText width="74%" height={compact ? 5 : 8} />
-            <MiniText width="62%" height={compact ? 5 : 8} />
-            <MiniText width="48%" height={compact ? 5 : 8} />
+            <PreviewLabel compact={compact}>{item}</PreviewLabel>
+            <PreviewLabel compact={compact} muted>About</PreviewLabel>
+            <PreviewLabel compact={compact} muted>Contact</PreviewLabel>
           </div>
         ))}
       </div>
-      <div style={{ height: compact ? 16 : 28, borderRadius: 999, background: "rgba(255,255,255,0.22)" }} />
+      <div style={{ height: compact ? 16 : 28, borderRadius: 999, background: "rgba(255,255,255,0.22)", display: "grid", placeItems: "center" }}>
+        <PreviewLabel compact={compact} inverse>Secure payments | Fast shipping | Easy returns</PreviewLabel>
+      </div>
     </div>
   );
 }
