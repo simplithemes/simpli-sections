@@ -1,39 +1,83 @@
 {% liquid
   assign sid = block.id | replace: '_', ''
+  assign preset = block.settings.section_preset
+  assign button_url = block.settings.button_link | default: routes.root_url
 %}
 
-<section class="ss-wb ss-wb-{{ sid }}" {{ block.shopify_attributes }}>
+<div class="ss-wb ss-wb-{{ sid }} ss-wb--{{ preset }}" {{ block.shopify_attributes }}>
   <div class="ss-wb__wrap">
-    <div class="ss-wb__content">
-      {% if block.settings.eyebrow != blank %}
-        <p class="ss-wb__eyebrow">{{ block.settings.eyebrow }}</p>
-      {% endif %}
+    {% case preset %}
+      {% when 'header' %}
+        <div class="ss-wb__nav">
+          <strong>{{ block.settings.brand_name }}</strong>
+          <nav aria-label="Simpli preview navigation">
+            <a href="{{ routes.root_url }}">Shop</a>
+            <a href="{{ routes.collections_url }}">Collections</a>
+            <a href="{{ routes.search_url }}">Search</a>
+          </nav>
+          <a class="ss-wb__button ss-wb__button--small" href="{{ button_url }}">{{ block.settings.button_label }}</a>
+        </div>
+        <div class="ss-wb__strip">{{ block.settings.eyebrow }}</div>
 
-      {% if block.settings.heading != blank %}
-        <h2>{{ block.settings.heading }}</h2>
-      {% endif %}
+      {% when 'category_grid' %}
+        <div class="ss-wb__intro">
+          <p>{{ block.settings.eyebrow }}</p>
+          <h2>{{ block.settings.heading }}</h2>
+        </div>
+        <div class="ss-wb__category-grid">
+          <a href="{{ routes.collections_url }}"><span>Skincare</span></a>
+          <a href="{{ routes.collections_url }}"><span>Apparel</span></a>
+          <a href="{{ routes.collections_url }}"><span>Kitchen</span></a>
+          <a href="{{ routes.collections_url }}"><span>Gifts</span></a>
+        </div>
 
-      {% if block.settings.text != blank %}
-        <p class="ss-wb__text">{{ block.settings.text }}</p>
-      {% endif %}
+      {% when 'brand_story' %}
+        <div class="ss-wb__story-media"></div>
+        <div class="ss-wb__content">
+          <p class="ss-wb__eyebrow">{{ block.settings.eyebrow }}</p>
+          <h2>{{ block.settings.heading }}</h2>
+          <p class="ss-wb__text">{{ block.settings.text }}</p>
+          <a class="ss-wb__button" href="{{ button_url }}">{{ block.settings.button_label }}</a>
+        </div>
 
-      {% if block.settings.button_label != blank %}
-        <a class="ss-wb__button" href="{{ block.settings.button_link }}">
-          {{ block.settings.button_label }}
-        </a>
-      {% endif %}
-    </div>
+      {% when 'footer' %}
+        <div class="ss-wb__footer">
+          <div>
+            <strong>{{ block.settings.brand_name }}</strong>
+            <p>{{ block.settings.text }}</p>
+          </div>
+          <div>
+            <strong>Shop</strong>
+            <a href="{{ routes.collections_url }}">Collections</a>
+            <a href="{{ routes.search_url }}">Search</a>
+          </div>
+          <div>
+            <strong>Support</strong>
+            <a href="{{ routes.root_url }}">Shipping</a>
+            <a href="{{ routes.root_url }}">Returns</a>
+          </div>
+          <div>
+            <strong>Trust</strong>
+            <span>Secure payments</span>
+            <span>Fast delivery</span>
+          </div>
+        </div>
 
-    <div class="ss-wb__visual" aria-hidden="true">
-      <div class="ss-wb__panel ss-wb__panel--main"></div>
-      <div class="ss-wb__mini-row">
-        <div class="ss-wb__panel"></div>
-        <div class="ss-wb__panel"></div>
-        <div class="ss-wb__panel"></div>
-      </div>
-    </div>
+      {% else %}
+        <div class="ss-wb__content">
+          <p class="ss-wb__eyebrow">{{ block.settings.eyebrow }}</p>
+          <h2>{{ block.settings.heading }}</h2>
+          <p class="ss-wb__text">{{ block.settings.text }}</p>
+          <a class="ss-wb__button" href="{{ button_url }}">{{ block.settings.button_label }}</a>
+        </div>
+        <div class="ss-wb__product-card">
+          <div class="ss-wb__product-visual"></div>
+          <strong>Featured product</strong>
+          <span>Premium layout preview</span>
+        </div>
+    {% endcase %}
   </div>
-</section>
+</div>
 
 <style>
 .ss-wb-{{ sid }}{
@@ -41,16 +85,31 @@
   color:{{ block.settings.text_color }};
   padding:{{ block.settings.pad_y }}px 16px;
 }
+.ss-wb-{{ sid }} *{
+  box-sizing:border-box;
+}
 .ss-wb-{{ sid }} .ss-wb__wrap{
   max-width:{{ block.settings.max_width }}px;
   margin:0 auto;
+}
+.ss-wb-{{ sid }} .ss-wb__content{
+  display:grid;
+  gap:14px;
+  max-width:680px;
+}
+.ss-wb-{{ sid }}.ss-wb--hero .ss-wb__wrap,
+.ss-wb-{{ sid }}.ss-wb--brand_story .ss-wb__wrap{
   display:grid;
   grid-template-columns:minmax(0,1fr) minmax(280px,.82fr);
   gap:32px;
   align-items:center;
 }
-.ss-wb-{{ sid }} .ss-wb__eyebrow{
-  margin:0 0 10px;
+.ss-wb-{{ sid }}.ss-wb--brand_story .ss-wb__wrap{
+  grid-template-columns:minmax(260px,.82fr) minmax(0,1fr);
+}
+.ss-wb-{{ sid }} .ss-wb__eyebrow,
+.ss-wb-{{ sid }} .ss-wb__intro p{
+  margin:0;
   font-size:12px;
   letter-spacing:.08em;
   text-transform:uppercase;
@@ -60,13 +119,13 @@
 .ss-wb-{{ sid }} h2{
   margin:0;
   font-size:clamp(30px,5vw,{{ block.settings.heading_size }}px);
-  line-height:1.02;
+  line-height:1.04;
   letter-spacing:-.04em;
   color:inherit;
 }
-.ss-wb-{{ sid }} .ss-wb__text{
-  max-width:620px;
-  margin:16px 0 0;
+.ss-wb-{{ sid }} .ss-wb__text,
+.ss-wb-{{ sid }} .ss-wb__footer p{
+  margin:0;
   font-size:16px;
   line-height:1.7;
   color:inherit;
@@ -74,8 +133,11 @@
 }
 .ss-wb-{{ sid }} .ss-wb__button{
   display:inline-flex;
-  margin-top:22px;
-  padding:13px 18px;
+  justify-content:center;
+  align-items:center;
+  width:max-content;
+  min-height:44px;
+  padding:12px 18px;
   border-radius:999px;
   background:{{ block.settings.button_bg }};
   color:{{ block.settings.button_text }};
@@ -83,38 +145,149 @@
   font-size:14px;
   font-weight:800;
 }
-.ss-wb-{{ sid }} .ss-wb__visual{
+.ss-wb-{{ sid }} .ss-wb__button--small{
+  min-height:36px;
+  padding:9px 14px;
+}
+.ss-wb-{{ sid }} .ss-wb__product-card,
+.ss-wb-{{ sid }} .ss-wb__story-media{
+  min-height:320px;
   border-radius:{{ block.settings.radius }}px;
-  min-height:340px;
-  padding:18px;
   background:linear-gradient(135deg, {{ block.settings.accent }} 0%, {{ block.settings.visual_bg }} 100%);
-  display:grid;
-  gap:14px;
-  align-content:end;
   box-shadow:0 22px 60px rgba(15,23,42,.12);
 }
-.ss-wb-{{ sid }} .ss-wb__panel{
-  border-radius:18px;
-  background:rgba(255,255,255,.86);
-  min-height:86px;
-}
-.ss-wb-{{ sid }} .ss-wb__panel--main{
-  min-height:190px;
-}
-.ss-wb-{{ sid }} .ss-wb__mini-row{
+.ss-wb-{{ sid }} .ss-wb__product-card{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  align-content:end;
   gap:10px;
+  padding:22px;
+  color:{{ block.settings.text_color }};
+}
+.ss-wb-{{ sid }} .ss-wb__product-visual{
+  min-height:190px;
+  border-radius:22px;
+  background:rgba(255,255,255,.78);
+}
+.ss-wb-{{ sid }} .ss-wb__product-card strong{
+  font-size:18px;
+}
+.ss-wb-{{ sid }} .ss-wb__product-card span{
+  opacity:.72;
+}
+.ss-wb-{{ sid }} .ss-wb__nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:16px 18px;
+  border-radius:999px;
+  background:{{ block.settings.card_bg }};
+  border:1px solid {{ block.settings.border }};
+}
+.ss-wb-{{ sid }} .ss-wb__nav strong{
+  font-size:22px;
+  letter-spacing:-.03em;
+}
+.ss-wb-{{ sid }} nav{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.ss-wb-{{ sid }} a{
+  color:inherit;
+}
+.ss-wb-{{ sid }} nav a,
+.ss-wb-{{ sid }} .ss-wb__footer a,
+.ss-wb-{{ sid }} .ss-wb__footer span{
+  text-decoration:none;
+  opacity:.76;
+  font-size:14px;
+}
+.ss-wb-{{ sid }} .ss-wb__strip{
+  margin-top:14px;
+  padding:14px 18px;
+  border-radius:18px;
+  background:linear-gradient(135deg, {{ block.settings.accent }}, {{ block.settings.visual_bg }});
+  color:{{ block.settings.button_text }};
+  font-weight:800;
+  text-align:center;
+}
+.ss-wb-{{ sid }} .ss-wb__intro{
+  display:grid;
+  gap:8px;
+  margin-bottom:22px;
+}
+.ss-wb-{{ sid }} .ss-wb__category-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+.ss-wb-{{ sid }} .ss-wb__category-grid a{
+  min-height:220px;
+  border-radius:{{ block.settings.radius }}px;
+  padding:18px;
+  display:flex;
+  align-items:flex-end;
+  text-decoration:none;
+  background:linear-gradient(135deg, {{ block.settings.visual_bg }}, {{ block.settings.card_bg }});
+  border:1px solid {{ block.settings.border }};
+}
+.ss-wb-{{ sid }} .ss-wb__category-grid span{
+  font-size:18px;
+  font-weight:800;
+}
+.ss-wb-{{ sid }} .ss-wb__footer{
+  display:grid;
+  grid-template-columns:1.4fr repeat(3,1fr);
+  gap:22px;
+  padding:24px;
+  border-radius:{{ block.settings.radius }}px;
+  background:{{ block.settings.card_bg }};
+  border:1px solid {{ block.settings.border }};
+}
+.ss-wb-{{ sid }} .ss-wb__footer div{
+  display:grid;
+  gap:8px;
+  align-content:start;
+}
+.ss-wb-{{ sid }} .ss-wb__footer strong{
+  font-size:16px;
 }
 @media(max-width:749px){
   .ss-wb-{{ sid }}{
     padding:{{ block.settings.mobile_pad_y }}px 14px;
   }
-  .ss-wb-{{ sid }} .ss-wb__wrap{
+  .ss-wb-{{ sid }}.ss-wb--hero .ss-wb__wrap,
+  .ss-wb-{{ sid }}.ss-wb--brand_story .ss-wb__wrap{
     grid-template-columns:1fr;
     gap:22px;
   }
-  .ss-wb-{{ sid }} .ss-wb__visual{
+  .ss-wb-{{ sid }}.ss-wb--brand_story .ss-wb__story-media{
+    order:2;
+  }
+  .ss-wb-{{ sid }} .ss-wb__nav{
+    border-radius:22px;
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .ss-wb-{{ sid }} .ss-wb__category-grid{
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+    scrollbar-width:none;
+  }
+  .ss-wb-{{ sid }} .ss-wb__category-grid::-webkit-scrollbar{
+    display:none;
+  }
+  .ss-wb-{{ sid }} .ss-wb__category-grid a{
+    min-width:72%;
+    min-height:180px;
+  }
+  .ss-wb-{{ sid }} .ss-wb__footer{
+    grid-template-columns:1fr;
+  }
+  .ss-wb-{{ sid }} .ss-wb__product-card,
+  .ss-wb-{{ sid }} .ss-wb__story-media{
     min-height:260px;
   }
 }
@@ -138,15 +311,18 @@
         { "value": "footer", "label": "Footer" }
       ]
     },
+    { "type": "text", "id": "brand_name", "label": "Brand name", "default": "Simpli Store" },
     { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Premium Shopify homepage" },
     { "type": "text", "id": "heading", "label": "Heading", "default": "Build a premium storefront in minutes" },
-    { "type": "textarea", "id": "text", "label": "Text", "default": "Use this flexible Simpli Sections block for homepage hero, story, category, header-style, and footer-style layouts." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Launch a polished D2C homepage section with premium spacing, mobile-first layout, and conversion-focused content." },
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop now" },
     { "type": "url", "id": "button_link", "label": "Button link" },
     { "type": "color", "id": "bg", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "card_bg", "label": "Card background", "default": "#ffffff" },
     { "type": "color", "id": "text_color", "label": "Text", "default": "#111827" },
     { "type": "color", "id": "accent", "label": "Accent", "default": "#14532d" },
     { "type": "color", "id": "visual_bg", "label": "Visual background", "default": "#d1fae5" },
+    { "type": "color", "id": "border", "label": "Border", "default": "#e5e7eb" },
     { "type": "color", "id": "button_bg", "label": "Button background", "default": "#111827" },
     { "type": "color", "id": "button_text", "label": "Button text", "default": "#ffffff" },
     { "type": "range", "id": "heading_size", "label": "Heading size", "min": 34, "max": 72, "step": 1, "default": 56 },
